@@ -1,0 +1,59 @@
+{
+  "name": "@rest-api/react-models",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "prebuild": "find src -name \"*.d.ts\" -type f -delete && find src -name \"*.js\" -type f -delete && find src -name \"*.js.map\" -type f -delete",
+    "build": "tsc",
+    "pretest": "npm run build",
+    "test": "nyc mocha",
+    "watch": "mocha-typescript-watch",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hector7/rest-api-react-models.git"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "test",
+      "coverage"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true
+  },
+  "author": "hector.rbs91@gmail.com",
+  "license": "ISC",
+  "homepage": "https://github.com/hector7/rest-api-react-models",
+  "devDependencies": {
+    "@types/chai": "^4.2.4",
+    "@types/mocha": "^5.2.7",
+    "@types/mock-require": "^2.0.0",
+    "@types/node": "^12.12.7",
+    "@types/redux-mock-store": "^1.0.1",
+    "chai": "^4.2.0",
+    "fake-xml-http-request": "^2.0.1",
+    "mocha": "^6.2.2",
+    "mocha-typescript": "^1.1.17",
+    "mock-require": "^3.0.3",
+    "nyc": "^14.1.1",
+    "redux-mock-store": "^1.5.3",
+    "source-map-support": "^0.5.16",
+    "typescript": "^3.7.2",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "dependencies": {
+    "@rest-api/redux": "0.0.2",
+    "@types/react-redux": "^7.1.5",
+    "react-redux": "^7.1.3"
+  }
+}
