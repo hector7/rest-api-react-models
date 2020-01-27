@@ -22,12 +22,13 @@ export function useGetPopulated<ItemType extends SchemaNamespace.Item, Item exte
     queryString?: string
 ) {
     const { fetchPopulatedIfNeeded } = model.actions
-    type Result = Get.PromsFromItem<Item>
-    const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
+    type Result = Get.PromsFromItem<Item> & { state: ReducerNamespace.ReducerType }
+    const [result, setResult] = React.useState<Result>({ error: null, invalidated: true, loading: false, items: [], state: <any>{} })
     const { getPopulated, isFetching, isInvalidated, getError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: Get.PromsFromItem<Item> = {
+        const resultState: Get.PromsFromItem<Item> & { state: ReducerNamespace.ReducerType } = {
+            state,
             items: getPopulated(state, queryString),
             loading: isFetching(state, queryString),
             invalidated: isInvalidated(state, queryString),
@@ -37,9 +38,20 @@ export function useGetPopulated<ItemType extends SchemaNamespace.Item, Item exte
     })
     React.useEffect(() => {
         dispatch(fetchPopulatedIfNeeded(queryString))
-        if (!shallowEqual(state, result)) setResult(state)
+        const { items: currentItems, ...currentState } = state
+        const { items: prevItems, ...prevState } = result
+        if (!shallowEqual(prevState, currentState)) setResult(state)
+        else if (currentItems.length !== prevItems.length) setResult(state)
+        else if (currentItems.some(item => {
+            let count = 0
+            model.model.schema._getModelValues(item, (model, id) => {
+                if (model.utils.getById(currentState.state, id) !== model.utils.getById(prevState.state, id)) count++
+            })
+            return count > 0
+        })) setResult(state)
     })
-    return state
+    const { state: currentSate, ...other } = state
+    return other
 }
 
 
