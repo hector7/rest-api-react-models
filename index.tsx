@@ -1,11 +1,10 @@
 import React from 'react'
 import { Provider as DefaultProvider, ReactReduxContextValue, InferableComponentEnhancerWithProps, createSelectorHook, createDispatchHook } from 'react-redux'
-import { Schema as SchemaClass } from './src/Schema'
 import { Redux as SchemaNamespace } from '@rest-api/redux/src/Schema'
 import { Types, configureStore } from '@rest-api/redux'
-import Model from './src/Model'
+import Model, { Schema as SchemaClass } from './src/DataTypes'
 import { SchemaTypes } from '@rest-api/redux/src/Schema'
-export { default as Model } from './src/Model'
+export { default as Model } from './src/DataTypes'
 export * from '@rest-api/redux'
 const { required } = Types
 export { required }
