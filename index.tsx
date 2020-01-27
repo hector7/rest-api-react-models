@@ -37,29 +37,20 @@ export class Model<ItemType extends SchemaNamespace.Item,
     Name extends string,
     GetItemType extends SchemaNamespace.Item = never,
     GetItem extends SchemaNamespace.RealType<GetItemType> = never,
-    MetaData = null> {
-    private model: OriginalModel<ItemType, RealType, PopulatedType, IdKey, Name, GetItemType, GetItem, MetaData>
-
-    constructor(schema: SchemaClass<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | UrlCallbackParam)
-    constructor(schema: SchemaClass<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | UrlCallbackParam, itemStructure: SchemaClass<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[])
-    constructor(schema: SchemaClass<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | UrlCallbackParam, itemStructure: SchemaClass<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, )
-    constructor(schema: SchemaClass<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | UrlCallbackParam, itemStructure: SchemaClass<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, opts: RouteOpts)
-    constructor(schema: SchemaClass<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | UrlCallbackParam, itemStructure?: SchemaClass<GetItemType, GetItem, any>, getItems?: (el: GetItem) => RealType[], getMetaData?: (el: GetItem) => MetaData, opts: RouteOpts = {}) {
-        this.model = new OriginalModel(schema, name, id, url, itemStructure!, getItems!, getMetaData!, opts)
-    }
+    MetaData = null> extends OriginalModel<ItemType, RealType, PopulatedType, IdKey, Name, GetItemType, GetItem, MetaData>{
     public useGet(queryString?: string) {
-        return useGet(this.model, queryString)
+        return useGet(this, queryString)
     }
     public useGetPopulated(queryString?: string) {
-        return useGetPopulated(this.model, queryString)
+        return useGetPopulated(this, queryString)
     }
 
     public useGetById(id: RealType[IdKey]) {
-        return useGetById(this.model, id)
+        return useGetById(this, id)
     }
 
     public useGetByIdPopulated(id: PopulatedType[IdKey]) {
-        return useGetByIdPopulated(this.model, id)
+        return useGetByIdPopulated(this, id)
     }
 
     public connectGet(): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string }>
@@ -69,7 +60,7 @@ export class Model<ItemType extends SchemaNamespace.Item,
     public connectGet<Name extends string = 'items'>(
         name?: Name
     ) {
-        return connectGet<ItemType, RealType, MetaData, Name>(this.model, name!)
+        return connectGet<ItemType, RealType, MetaData, Name>(this, name!)
     }
     public connectGetPopulated(): InferableComponentEnhancerWithProps<GetPopulated.PromsFromItem<PopulatedType>, { queryString?: string }>
     public connectGetPopulated<Name extends string>(
@@ -78,7 +69,7 @@ export class Model<ItemType extends SchemaNamespace.Item,
     public connectGetPopulated<Name extends string = 'items'>(
         name?: Name
     ) {
-        return connectGetPopulated<ItemType, PopulatedType, MetaData, Name>(this.model, name!)
+        return connectGetPopulated<ItemType, PopulatedType, MetaData, Name>(this, name!)
     }
 
     public connectGetById(): InferableComponentEnhancerWithProps<GetById.PromsFromItem<RealType>, { id: RealType[IdKey] }>
@@ -93,7 +84,7 @@ export class Model<ItemType extends SchemaNamespace.Item,
         name?: string,
         idPropName?: string
     ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<any, any>, any> {
-        return connectGetById(this.model, name!, idPropName!)
+        return connectGetById(this, name!, idPropName!)
     }
 
     public connectGetByIdPopulated(): InferableComponentEnhancerWithProps<GetByIdPopulated.PromsFromItem<PopulatedType>, { id: RealType[IdKey] }>
@@ -108,13 +99,13 @@ export class Model<ItemType extends SchemaNamespace.Item,
         name?: string,
         idPropName?: string
     ): InferableComponentEnhancerWithProps<GetByIdPopulated.PromsFromItem<any, any>, any> {
-        return connectGetByIdPopulated(this.model, name!, idPropName!)
+        return connectGetByIdPopulated(this, name!, idPropName!)
     }
 }
 
 export function getProvider() {
     const store = configureStore()
-    const Provider: React.FunctionComponent<{}> = (props) => {
+    const Provider: React.FC<{}> = (props) => {
         return <DefaultProvider {...props} store={store} context={Context} />
     }
     return Provider

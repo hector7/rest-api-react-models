@@ -1,7 +1,6 @@
-﻿# @rest-api/react-models
-
-Caution: This library are not fully tested, not use in production.
+﻿﻿Caution: This library are not fully tested, not use in production.
 Will be tested on a near future. Please, use it and open issues for bugs or improvements!
+## @rest-api/react-models
 
 Make your React project easier to maintain with this package.
 
@@ -11,7 +10,7 @@ Benefits:
  - All ajax calls are stored on redux, your endpoint is only called on necessary
  - Better structure on your project
 
-# File structure
+## File structure
 This code examples follows this src structure:
 ```
 src
@@ -26,10 +25,23 @@ src
 |   └-- libraryContainer.tsx
 └-- index.tsx
 ```
+## Provider
+First of all you need to insert on your index.tsx the provider from application.
+
+    ...
+    import { getProvider } from  '@rest-api/react-models';
+	
+	const ReactModelsProvider = getProvider();
 
 
-# Declaring models
-First of all you need to declare models of your application, given a Schema, an id (need to be required field) and a base url:
+	ReactDOM.render(<ReactModelsProvider>
+			<App />
+		</ReactModelsProvider>, document.getElementById('root'));
+
+## Declaring models
+Declare the models of your application, given a Schema, an id (need to be required field) and a base url:
+
+    import  React  from  'react'
     
     import { Model, Schema, required } from  '@rest-api/react-models'
     
@@ -77,7 +89,7 @@ And foreign keys of your model can be representated:
 	export default new Model(bookSchema, 'books', 'id', '/api/book')
 
 
-# Using on the container
+## Using on the container
 
 Once you have created a model, you can use it on a container!
 
