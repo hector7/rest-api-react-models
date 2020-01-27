@@ -20,7 +20,7 @@ export namespace Get {
 export function useGetPopulated<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.Type<ItemType>, Metadata>(
     model: Model<ItemType, any, Item, any, any, {}, Metadata>,
     queryString?: string
-) {
+): Get.PromsFromItem<Item> {
     const { fetchPopulatedIfNeeded } = model.actions
     type Result = Get.PromsFromItem<Item> & { state: ReducerNamespace.ReducerType }
     const [result, setResult] = React.useState<Result>({ error: null, invalidated: true, loading: false, items: [], state: <any>{} })

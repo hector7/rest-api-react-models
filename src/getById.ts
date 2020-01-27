@@ -22,7 +22,7 @@ export function useGetById<ItemType extends SchemaNamespace.Item,
     IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string>(
         model: Model<ItemType, Item, any, IdKey, any, {}, any>,
         id: Item[IdKey]
-    ) {
+    ): GetById.PromsFromItem<Item> {
     const { fetchByIdIfNeeded } = model.actions
     type Result = GetById.PromsFromItem<Item>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })

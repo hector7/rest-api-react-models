@@ -17,10 +17,16 @@ class BookContainer extends React.Component<{ error: HttpError | null, loading: 
 bookModel.connectGet()(BookContainer)
 
 const bookContainer: React.FC<{}> = () => {
-    const { items, loading, error } = bookModel.useGet()
+    const { items } = bookModel.useGet()
+    const { items: itemsPopulated, loading, error } = bookModel.useGetPopulated()
+    const { item } = bookModel.useGetById(1)
+    const { item: itemPopulated } = bookModel.useGetByIdPopulated(1)
     if (error) return <p>There are an error with the request</p>
     if (loading) return <p>Loading...</p>
-    return <ul>{
-        items.map(i => <BookView name={i.name} />)
-    }</ul>
+    return <ul>
+        {items.map(i => <BookView name={i.name} />)}
+        {itemsPopulated.map(i => <BookView name={i.library!.name} />)}
+        {< li > Item: {item!.name}</li>}
+        {<li>Item populated: {itemPopulated!.library!.id}</li>}
+    </ul>
 }

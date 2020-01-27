@@ -20,7 +20,7 @@ export namespace Get {
 export function useGet<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, Metadata>(
     model: Model<ItemType, Item, any, any, any, {}, Metadata>,
     queryString?: string
-) {
+): Get.PromsFromItem<Item> {
     const { fetchIfNeeded } = model.actions
     type Result = Get.PromsFromItem<Item> & { state: ReducerNamespace.ReducerType }
     const [result, setResult] = React.useState<Result>({ error: null, invalidated: true, loading: false, items: [], state: <any>{} })

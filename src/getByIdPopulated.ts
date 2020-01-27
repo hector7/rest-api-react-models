@@ -22,7 +22,7 @@ export function useGetByIdPopulated<ItemType extends SchemaNamespace.Item,
     IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string>(
         model: Model<ItemType, any, Item, IdKey, any, {}, any>,
         id: Item[IdKey]
-    ) {
+    ): GetById.PromsFromItem<Item> {
     const { fetchByIdPopulatedIfNeeded } = model.actions
     type Result = GetById.PromsFromItem<Item>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
