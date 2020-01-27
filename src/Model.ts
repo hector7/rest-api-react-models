@@ -5,6 +5,14 @@ import { Get as GetPopulated, useGetPopulated, default as connectGetPopulated } 
 import { GetById, useGetById, default as connectGetById } from './getById'
 import { GetById as GetByIdPopulated, useGetByIdPopulated, default as connectGetByIdPopulated } from './getByIdPopulated'
 import { InferableComponentEnhancerWithProps } from 'react-redux'
+import { Schema } from './Schema'
+
+type RouteOpts = {
+    trailingSlash?: boolean;
+    headers?: {
+        [key: string]: string;
+    };
+};
 
 export default class Model<ItemType extends SchemaNamespace.Item,
     RealType extends SchemaNamespace.RealType<ItemType>,
@@ -14,9 +22,19 @@ export default class Model<ItemType extends SchemaNamespace.Item,
     GetItemType extends SchemaNamespace.Item = never,
     GetItem extends SchemaNamespace.RealType<GetItemType> = never,
     MetaData = null> extends OriginalModel<ItemType, RealType, PopulatedType, IdKey, Name, GetItemType, GetItem, MetaData>{
+
+    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string));
+    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[]);
+    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData);
+    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, opts: RouteOpts)
+    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure?: Schema<GetItemType, GetItem, any>, getItems?: (el: GetItem) => RealType[], getMetaData?: (el: GetItem) => MetaData, opts?: RouteOpts) {
+        super(schema, name, id, url, itemStructure!, getItems!, getMetaData!, opts!)
+    }
+
     public useGet(queryString?: string) {
         return useGet(this, queryString)
     }
+
     public useGetPopulated(queryString?: string) {
         return useGetPopulated(this, queryString)
     }
