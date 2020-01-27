@@ -42,7 +42,7 @@ export function useGetPopulated<ItemType extends SchemaNamespace.Item, Item exte
         const { items: prevItems, ...prevState } = result
         if (!shallowEqual(prevState, currentState)) setResult(state)
         else if (currentItems.length !== prevItems.length) setResult(state)
-        else if (currentItems.some(item => {
+        else if (model.utils.get(currentState.state, queryString).some(item => {
             let count = 0
             model.model.schema._getModelValues(item, (model, id) => {
                 if (model.utils.getById(currentState.state, id) !== model.utils.getById(prevState.state, id)) count++
