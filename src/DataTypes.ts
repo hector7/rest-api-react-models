@@ -5,6 +5,7 @@ import { Get as GetPopulated, useGetPopulated, default as connectGetPopulated } 
 import { GetById, useGetById, default as connectGetById } from './getById'
 import { GetById as GetByIdPopulated, useGetByIdPopulated, default as connectGetByIdPopulated } from './getByIdPopulated'
 import { InferableComponentEnhancerWithProps } from 'react-redux'
+import connectModificators, { useModificators } from './modificators'
 
 type RouteOpts = {
     trailingSlash?: boolean;
@@ -38,12 +39,20 @@ export default class Model<ItemType extends SchemaNamespace.Item,
         return useGetPopulated(this, queryString)
     }
 
+    public useModificators(){
+        return useModificators(this)
+    }
+
     public useGetById(id: RealType[IdKey]) {
         return useGetById(this, id)
     }
 
     public useGetByIdPopulated(id: PopulatedType[IdKey]) {
         return useGetByIdPopulated(this, id)
+    }
+
+    public connectModificators(){
+        return connectModificators(this)
     }
 
     public connectGet(): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string }>
