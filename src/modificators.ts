@@ -9,7 +9,9 @@ export namespace Modificators {
     export type PromsFromItem<Item> = {
         post: (item: Partial<Item>, callback: Callback<Item, HttpError>) => any,
         put: (id: Item[any], item: Partial<Item>, callback: Callback<Item, HttpError>) => any,
-        remove: (item: Item, callback: Callback<undefined, HttpError>) => any
+        remove: (item: Item, callback: Callback<undefined, HttpError>) => any,
+        invalidate: (queryString: string) => any,
+        invalidateAll: () => any
     }
 }
 
@@ -18,17 +20,15 @@ export namespace Modificators {
 export function useModificators<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, Metadata>(
     model: Model<ItemType, Item, any, any, any, {}, Metadata>,
 ): Modificators.PromsFromItem<Item> {
-    const { post, put, delete: remove } = model.actions
+    const { post, put, delete: remove, invalidate, invalidateAll } = model.actions
     const dispatch = useDispatch()
-    return <{
-        post: typeof post,
-        put: typeof put,
-        remove: typeof remove
-    }>{
-            post: (...args) => dispatch(post(...args)),
-            put: (...args) => dispatch(put(...args)),
-            remove: (...args) => dispatch(remove(...args)),
-        }
+    return {
+        invalidate: (...args) => dispatch(invalidate(...args)),
+        invalidateAll: (...args) => dispatch(invalidateAll(...args)),
+        post: (...args) => dispatch(post(...args)),
+        put: (...args) => dispatch(put(...args)),
+        remove: (...args) => dispatch(remove(...args)),
+    }
 }
 
 
