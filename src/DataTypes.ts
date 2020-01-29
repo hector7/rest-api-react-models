@@ -22,13 +22,12 @@ export default class Model<ItemType extends SchemaNamespace.Item,
     GetItemType extends SchemaNamespace.Item = never,
     GetItem extends SchemaNamespace.RealType<GetItemType> = never,
     MetaData = null> extends OriginalModel<ItemType, RealType, PopulatedType, IdKey, Name, GetItemType, GetItem, MetaData>{
-
-    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string));
-    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[]);
-    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData);
-    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, opts: RouteOpts)
-    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure?: Schema<GetItemType, GetItem, any>, getItems?: (el: GetItem) => RealType[], getMetaData?: (el: GetItem) => MetaData, opts?: RouteOpts) {
-        super(schema, name, id, url, itemStructure!, getItems!, getMetaData!, opts!)
+        constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), routeOpts?: RouteOpts)
+        constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], routeOpts?: RouteOpts)
+        constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, )
+        constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, opts: RouteOpts)
+        constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructureOrRouteOpts?: Schema<GetItemType, GetItem, any> | RouteOpts, getItems?: (el: GetItem) => RealType[], getMetaDataOrRouteOpts?: ((el: GetItem) => MetaData) | RouteOpts, opts?: RouteOpts) {
+        super(schema, name, id, url, <any>itemStructureOrRouteOpts, getItems!, <any>getMetaDataOrRouteOpts!, opts!)
     }
 
     public useGet(queryString?: string) {
