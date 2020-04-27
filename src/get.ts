@@ -17,8 +17,13 @@ export namespace Get {
 
 
 
-export function useGet<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, Metadata>(
-    model: Model<ItemType, Item, any, any, any, {}, Metadata>,
+export function useGet<
+    ItemType extends SchemaNamespace.Item,
+    Item extends SchemaNamespace.RealType<ItemType>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    Metadata
+>(
+    model: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
     queryString?: string
 ): Get.PromsFromItem<Item> {
     const { fetchIfNeeded } = model.actions
@@ -87,13 +92,23 @@ function useGetExtended<ItemType extends SchemaNamespace.Item, Item extends Sche
 }
 
 
-export default function connectGet<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, Metadata>(
-    model: Model<ItemType, Item, any, any, any, {}, Metadata>,
+export default function connectGet<
+    ItemType extends SchemaNamespace.Item,
+    Item extends SchemaNamespace.RealType<ItemType>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    Metadata
+>(
+    model: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
 ): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item>, { queryString?: string }>
-export default function connectGet<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, Metadata, Name extends string>(
-    mmodel: Model<ItemType, Item, any, any, any, {}, Metadata>,
-    name: Name
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item, Name>, { queryString?: string }>
+export default function connectGet<
+    ItemType extends SchemaNamespace.Item,
+    Item extends SchemaNamespace.RealType<ItemType>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    Metadata,
+    Name extends string>(
+        mmodel: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
+        name: Name
+    ): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item, Name>, { queryString?: string }>
 export default function connectGet<Name extends string = 'items'>(
     model: any,
     name?: Name

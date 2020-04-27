@@ -1,15 +1,14 @@
 import React from 'react'
-import { Redux as ReducerNamespace } from '@rest-api/redux/src/ReducerStorage'
 import { Redux as SchemaNamespace } from '@rest-api/redux/src/Schema'
 import { Model, HttpError, Callback } from '@rest-api/redux'
-import { InferableComponentEnhancerWithProps, shallowEqual, GetProps } from 'react-redux'
-import { useDispatch, useSelector } from '..'
+import { InferableComponentEnhancerWithProps, GetProps } from 'react-redux'
+import { useDispatch } from '..'
 
 export namespace Modificators {
-    export type PromsFromItem<Item> = {
-        post: (item: Partial<Item>, callback: Callback<Item, HttpError>) => any,
-        patch: (id: Item[any], item: Partial<Item>, callback: Callback<Item, HttpError>) => any,
-        put: (id: Item[any], item: Item, callback: Callback<Item, HttpError>) => any,
+    export type PromsFromItem<Item, IdKey extends keyof Item> = {
+        post: (item: Omit<Item, IdKey> | FormData, callback: Callback<Item, HttpError>) => any,
+        patch: (id: Item[any], item: Partial<Item> | FormData, callback: Callback<Item, HttpError>) => any,
+        put: (id: Item[any], item: Item | FormData, callback: Callback<Item, HttpError>) => any,
         remove: (item: Item, callback: Callback<undefined, HttpError>) => any,
         invalidate: (queryString: string) => any,
         invalidateAll: () => any
@@ -18,9 +17,13 @@ export namespace Modificators {
 
 
 
-export function useModificators<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, Metadata>(
-    model: Model<ItemType, Item, any, any, any, {}, Metadata>,
-): Modificators.PromsFromItem<Item> {
+export function useModificators<
+    ItemType extends SchemaNamespace.Item,
+    Item extends SchemaNamespace.RealType<ItemType>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    Metadata>(
+        model: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
+): Modificators.PromsFromItem<Item, IdKey> {
     const { post, put, patch, delete: remove, invalidate, invalidateAll } = model.actions
     const dispatch = useDispatch()
     return {
@@ -34,9 +37,9 @@ export function useModificators<ItemType extends SchemaNamespace.Item, Item exte
 }
 
 
-export default function connectModificators<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, Metadata>(
-    model: Model<ItemType, Item, any, any, any, {}, Metadata>,
-): InferableComponentEnhancerWithProps<Modificators.PromsFromItem<Item>, {}> {
+export default function connectModificators<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string, Metadata>(
+    model: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
+): InferableComponentEnhancerWithProps<Modificators.PromsFromItem<Item, IdKey>, {}> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent>> = (props) => {
             const result = useModificators(model)

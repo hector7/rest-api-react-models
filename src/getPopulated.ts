@@ -17,17 +17,22 @@ export namespace Get {
 
 
 
-export function useGetPopulated<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.Type<ItemType>, Metadata>(
-    model: Model<ItemType, any, Item, any, any, {}, Metadata>,
-    queryString?: string
-): Get.PromsFromItem<Item> {
+export function useGetPopulated<
+    ItemType extends SchemaNamespace.Item,
+    RealType extends SchemaNamespace.RealType<ItemType>,
+    PopulatedType extends SchemaNamespace.Type<ItemType>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
+    Metadata>(
+        model: Model<ItemType, RealType, PopulatedType, IdKey, any, {}, Metadata>,
+        queryString?: string
+    ): Get.PromsFromItem<PopulatedType> {
     const { fetchPopulatedIfNeeded } = model.actions
-    type Result = Get.PromsFromItem<Item> & { state: ReducerNamespace.ReducerType }
+    type Result = Get.PromsFromItem<PopulatedType> & { state: ReducerNamespace.ReducerType }
     const [result, setResult] = React.useState<Result>({ error: null, invalidated: true, loading: false, items: [], state: <any>{} })
     const { getPopulated, isFetching, isInvalidated, getError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: Get.PromsFromItem<Item> & { state: ReducerNamespace.ReducerType } = {
+        const resultState: Get.PromsFromItem<PopulatedType> & { state: ReducerNamespace.ReducerType } = {
             state,
             items: getPopulated(state, queryString),
             loading: isFetching(state, queryString),
@@ -91,11 +96,22 @@ function useGetExtended<ItemType extends SchemaNamespace.Item, Item extends Sche
 }
 
 
-export default function connectGet<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.Type<ItemType>, Metadata>(
-    model: Model<ItemType, any, Item, any, any, {}, Metadata>,
+export default function connectGet<
+    ItemType extends SchemaNamespace.Item,
+    Item extends SchemaNamespace.Type<ItemType>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    Metadata
+>(
+    model: Model<ItemType, any, Item, IdKey, any, {}, Metadata>,
 ): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item>, { queryString?: string }>
-export default function connectGet<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.Type<ItemType>, Metadata, Name extends string>(
-    mmodel: Model<ItemType, any, Item, any, any, {}, Metadata>,
+export default function connectGet<
+    ItemType extends SchemaNamespace.Item,
+    Item extends SchemaNamespace.Type<ItemType>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    Metadata,
+    Name extends string
+>(
+    mmodel: Model<ItemType, any, Item, IdKey, any, {}, Metadata>,
     name: Name
 ): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item, Name>, { queryString?: string }>
 export default function connectGet<Name extends string = 'items'>(

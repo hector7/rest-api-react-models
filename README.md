@@ -1,6 +1,4 @@
-﻿﻿Caution: This library are not fully tested, not use in production.
-Will be tested on a near future. Please, use it and open issues for bugs or improvements!
-## @rest-api/react-models
+﻿﻿## @rest-api/react-models
 
 Make your React project easier to maintain with this package.
 
@@ -9,6 +7,8 @@ Benefits:
  - You will gain a more typed project (if you are using Typescript)
  - All ajax calls are stored on redux, your endpoint is only called on necessary
  - Better structure on your project
+
+Caution: if you have some random typescript error (pex: ts2345) on creating or editing models, kill the process and restart npm start (on Visual Studio Code restart program).
 
 ## File structure
 This code examples follows this src structure:
@@ -64,10 +64,8 @@ You can use complex objects on a Schema simplier creating subschemas:
     
     const testSchema = Schema({
 	    subSchema: Schema({
-	    	id: {
-	    	    type: String,
-			},
-			name: String
+	    	id: { type: String },
+	    	name: String
     	})
 	})
 And foreign keys of your model can be representated:
@@ -133,6 +131,3 @@ And the "connect" way as a redux container:
 		}
 	}
 	export default bookModel.connectGet()(BookContainer)
-
-## Next steps
-A better documentation and fully tested package!
