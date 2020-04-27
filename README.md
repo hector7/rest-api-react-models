@@ -1,4 +1,4 @@
-﻿﻿## @rest-api/react-models
+## @rest-api/react-models
 
 Make your React project easier to maintain with this package.
 
