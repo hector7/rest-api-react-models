@@ -8,7 +8,7 @@ Benefits:
  - All ajax calls are stored on redux, your endpoint is only called on necessary
  - Better structure on your project
 
-Caution: if you have some random typescript error (pex: ts2345) on creating or editing models, kill the process and restart npm start (on Visual Studio Code restart program).
+Caution: if you have some random typescript error (pex: ts2589) on creating or editing models, kill the process and restart npm start (on Visual Studio Code restart program).
 
 ## File structure
 This code examples follows this src structure:
