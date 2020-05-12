@@ -5,10 +5,10 @@ import { InferableComponentEnhancerWithProps, GetProps } from 'react-redux'
 import { useDispatch } from '..'
 
 export namespace Modificators {
-    export type PromsFromItem<Item, IdKey extends keyof Item> = {
+    export type PropsFromItem<Item, IdKey extends keyof Item> = {
         post: (item: Omit<Item, IdKey> | FormData, callback: Callback<Item, HttpError>) => any,
-        patch: (id: Item[any], item: Partial<Item> | FormData, callback: Callback<Item, HttpError>) => any,
-        put: (id: Item[any], item: Item | FormData, callback: Callback<Item, HttpError>) => any,
+        patch: (id: Item[IdKey], item: Partial<Item> | FormData, callback: Callback<Item, HttpError>) => any,
+        put: (id: Item[IdKey], item: Item | FormData, callback: Callback<Item, HttpError>) => any,
         remove: (item: Item, callback: Callback<undefined, HttpError>) => any,
         invalidate: (queryString: string) => any,
         invalidateAll: () => any
@@ -23,7 +23,7 @@ export function useModificators<
     IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
     Metadata>(
         model: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
-): Modificators.PromsFromItem<Item, IdKey> {
+): Modificators.PropsFromItem<Item, IdKey> {
     const { post, put, patch, delete: remove, invalidate, invalidateAll } = model.actions
     const dispatch = useDispatch()
     return {
@@ -39,7 +39,7 @@ export function useModificators<
 
 export default function connectModificators<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string, Metadata>(
     model: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
-): InferableComponentEnhancerWithProps<Modificators.PromsFromItem<Item, IdKey>, {}> {
+): InferableComponentEnhancerWithProps<Modificators.PropsFromItem<Item, IdKey>, {}> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent>> = (props) => {
             const result = useModificators(model)
