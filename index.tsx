@@ -12,17 +12,23 @@ const initialContext: any = null
 const Context = React.createContext<ReactReduxContextValue<any, any>>(initialContext)
 export function Schema<ItemType extends SchemaNamespace.Item,
     RealType extends SchemaNamespace.RealType<ItemType>,
-    PopulatedType extends SchemaNamespace.Type<ItemType>>(schema: ItemType) {
-    return new SchemaClass<ItemType, RealType, PopulatedType>(schema)
+    PopulatedType extends SchemaNamespace.PopulatedType<ItemType>>(schema: ItemType) {
+    return new SchemaClass<RealType, PopulatedType>(schema)
 }
 export const useSelector = createSelectorHook(Context)
 export const useDispatch = createDispatchHook(Context)
-export type ModelType<M extends Model<any, any, any, any, any, any, any> | SchemaClass<any, any, any>> =
+export type ModelType<M extends Model<any, any, any, any, any, any, any> | SchemaClass<any, any>> =
     M extends Model<any, infer T, any, any, any, any, any> ? T :
-    M extends SchemaClass<any, infer T, any> ? T : never
-export type ModelPopulatedType<M extends Model<any, any, any, any, any, any, any> | SchemaClass<any, any, any>> =
+    M extends SchemaClass<infer T, any> ? T : never
+export type ModelPopulatedType<M extends Model<any, any, any, any, any, any, any> | SchemaClass<any, any>> =
     M extends Model<any, any, infer T, any, any, any, any> ? T :
-    M extends SchemaClass<any, any, infer T> ? T : never
+    M extends SchemaClass<any, infer T> ? T : never
+export type RealType<M extends Model<any, any, any, any, any, any, any> | SchemaClass<any, any>> =
+    M extends Model<any, infer T, any, any, any, any, any> ? T :
+    M extends SchemaClass<infer T, any> ? T : never
+export type PopulatedType<M extends Model<any, any, any, any, any, any, any> | SchemaClass<any, any>> =
+    M extends Model<any, any, infer T, any, any, any, any> ? T :
+    M extends SchemaClass<any, infer T> ? T : never
 
 
 export function getProvider() {

@@ -18,21 +18,20 @@ export namespace Get {
 
 
 export function useGet<
-    ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Metadata
 >(
-    model: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
+    model: Model<RealType, any, IdKey, any, {}, Metadata>,
     queryString?: string
-): Get.PromsFromItem<Item> {
+): Get.PromsFromItem<RealType> {
     const { fetchIfNeeded } = model.actions
-    type Result = Get.PromsFromItem<Item> & { state: ReducerNamespace.ReducerType }
+    type Result = Get.PromsFromItem<RealType> & { state: ReducerNamespace.ReducerType }
     const [result, setResult] = React.useState<Result>({ error: null, invalidated: true, loading: false, items: [], state: <any>{} })
     const { get, isFetching, isInvalidated, getError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: Get.PromsFromItem<Item> & { state: ReducerNamespace.ReducerType } = {
+        const resultState: Get.PromsFromItem<RealType> & { state: ReducerNamespace.ReducerType } = {
             state,
             items: get(state, queryString),
             loading: isFetching(state, queryString),
@@ -56,9 +55,9 @@ export function useGet<
 }
 
 
-function useGetBasic<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, Metadata>(
-    model: Model<ItemType, Item, any, any, any, {}, Metadata>,
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item>, { queryString?: string }> {
+function useGetBasic<RealType, Metadata>(
+    model: Model<RealType, any, any, any, {}, Metadata>,
+): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
             queryString?: string
@@ -70,17 +69,17 @@ function useGetBasic<ItemType extends SchemaNamespace.Item, Item extends SchemaN
         return ObjectRaising
     }
 }
-function useGetExtended<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, Metadata, Name extends string>(
-    model: Model<ItemType, Item, any, any, any, {}, Metadata>,
+function useGetExtended<RealType, Metadata, Name extends string>(
+    model: Model<RealType, any, any, any, {}, Metadata>,
     name: Name
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item, Name>, { queryString?: string }> {
+): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType, Name>, { queryString?: string }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
             queryString?: string
         }
         > = (props) => {
             const { items, ...otherPropsOfResult } = useGet(model, props.queryString)
-            const result: Get.PromsFromItem<Item, Name> = <any>{
+            const result: Get.PromsFromItem<RealType, Name> = <any>{
                 ...otherPropsOfResult,
                 [name]: items,
 
@@ -93,22 +92,20 @@ function useGetExtended<ItemType extends SchemaNamespace.Item, Item extends Sche
 
 
 export default function connectGet<
-    ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Metadata
 >(
-    model: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item>, { queryString?: string }>
+    model: Model<RealType, any, IdKey, any, {}, Metadata>,
+): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string }>
 export default function connectGet<
-    ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Metadata,
     Name extends string>(
-        mmodel: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
+        mmodel: Model<RealType, any, IdKey, any, {}, Metadata>,
         name: Name
-    ): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item, Name>, { queryString?: string }>
+    ): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType, Name>, { queryString?: string }>
 export default function connectGet<Name extends string = 'items'>(
     model: any,
     name?: Name

@@ -17,19 +17,18 @@ export namespace GetById {
 
 
 
-export function useGetById<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string>(
-        model: Model<ItemType, Item, any, IdKey, any, {}, any>,
-        id: Item[IdKey]
-    ): GetById.PromsFromItem<Item> {
+export function useGetById<RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string>(
+        model: Model<RealType, any, IdKey, any, {}, any>,
+        id: RealType[IdKey]
+    ): GetById.PromsFromItem<RealType> {
     const { fetchByIdIfNeeded } = model.actions
-    type Result = GetById.PromsFromItem<Item>
+    type Result = GetById.PromsFromItem<RealType>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
     const { getById, isFetchingById, isInvalidatedById, getErrorById } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: GetById.PromsFromItem<Item> = {
+        const resultState: GetById.PromsFromItem<RealType> = {
             item: getById(state, id),
             loading: isFetchingById(state, id),
             invalidated: isInvalidatedById(state, id),
@@ -45,14 +44,13 @@ export function useGetById<ItemType extends SchemaNamespace.Item,
 }
 
 
-function useGetBasic<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string>(
-        model: Model<ItemType, Item, any, IdKey, any, {}, any>,
-): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item>, { id: Item[IdKey] }> {
+function useGetBasic<RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string>(
+        model: Model<RealType, any, IdKey, any, {}, any>,
+): InferableComponentEnhancerWithProps<GetById.PromsFromItem<RealType>, { id: RealType[IdKey] }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
-            id: Item[IdKey]
+            id: RealType[IdKey]
         }
         > = (props) => {
             const result = useGetById(model, props.id)
@@ -61,19 +59,18 @@ function useGetBasic<ItemType extends SchemaNamespace.Item,
         return ObjectRaising
     }
 }
-function useGetExtended<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string, Name extends string>(
-        model: Model<ItemType, Item, any, IdKey, any, {}, {}, any>,
+function useGetExtended<RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string, Name extends string>(
+        model: Model<RealType, any, IdKey, any, {}, {}, any>,
         name: Name
-    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item, Name>, { id: Item[IdKey] }> {
+    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<RealType, Name>, { id: RealType[IdKey] }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
-            id: Item[IdKey]
+            id: RealType[IdKey]
         }
         > = (props) => {
             const { item, ...otherPropsOfResult } = useGetById(model, props.id)
-            const result: GetById.PromsFromItem<Item, Name> = <any>{
+            const result: GetById.PromsFromItem<RealType, Name> = <any>{
                 ...otherPropsOfResult,
                 [name]: item,
 
@@ -84,18 +81,17 @@ function useGetExtended<ItemType extends SchemaNamespace.Item,
     }
 }
 
-function useGetExtendedRenamed<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+function useGetExtendedRenamed<RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Name extends string, idPropName extends string>(
-        model: Model<ItemType, Item, any, IdKey, any, {}, {}, any>,
+        model: Model<RealType, any, IdKey, any, {}, {}, any>,
         name: Name,
         idPropName: idPropName
-    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item, Name>, Record<idPropName, Item[IdKey]>> {
+    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<RealType, Name>, Record<idPropName, RealType[IdKey]>> {
     return (ReactComponent): any => {
-        const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & Record<idPropName, Item[IdKey]>> = (props) => {
+        const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & Record<idPropName, RealType[IdKey]>> = (props) => {
             const { item, ...otherPropsOfResult } = useGetById(model, <any>props[idPropName])
-            const result: GetById.PromsFromItem<Item, Name> = <any>{
+            const result: GetById.PromsFromItem<RealType, Name> = <any>{
                 ...otherPropsOfResult,
                 [name]: item,
 
@@ -106,26 +102,23 @@ function useGetExtendedRenamed<ItemType extends SchemaNamespace.Item,
     }
 }
 
-export default function connectGetById<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string>(
-        model: Model<ItemType, Item, any, IdKey, any, any, any, any>,
-): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item>, { id: Item[IdKey] }>
-export default function connectGetById<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+export default function connectGetById<RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string>(
+        model: Model<RealType, any, IdKey, any, any, any, any>,
+): InferableComponentEnhancerWithProps<GetById.PromsFromItem<RealType>, { id: RealType[IdKey] }>
+export default function connectGetById<RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Name extends string>(
-        model: Model<ItemType, Item, any, IdKey, any, any, any, any>,
+        model: Model<RealType, any, IdKey, any, any, any, any>,
         propertyName: Name
-    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item, Name>, { id: Item[IdKey] }>;
-export default function connectGetById<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<RealType, Name>, { id: RealType[IdKey] }>;
+export default function connectGetById<RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Name extends string, idPropName extends string>(
-        model: Model<ItemType, Item, any, IdKey, any, any, any, any>,
+        model: Model<RealType, any, IdKey, any, any, any, any>,
         propertyName: Name,
         idPropName: idPropName
-    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item, Name>, Record<idPropName, Item[IdKey]>>;
+    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<RealType, Name>, Record<idPropName, RealType[IdKey]>>;
 export default function connectGetById(
     model: Model<any, any, any, any, any, any, any>,
     name?: string,

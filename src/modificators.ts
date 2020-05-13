@@ -18,12 +18,11 @@ export namespace Modificators {
 
 
 export function useModificators<
-    ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.RealType<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    RealType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Metadata>(
-        model: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
-): Modificators.PropsFromItem<Item, IdKey> {
+        model: Model<RealType, any, IdKey, any, {}, Metadata>,
+): Modificators.PropsFromItem<RealType, IdKey> {
     const { post, put, patch, delete: remove, invalidate, invalidateAll } = model.actions
     const dispatch = useDispatch()
     return {
@@ -37,9 +36,9 @@ export function useModificators<
 }
 
 
-export default function connectModificators<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.RealType<ItemType>, IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string, Metadata>(
-    model: Model<ItemType, Item, any, IdKey, any, {}, Metadata>,
-): InferableComponentEnhancerWithProps<Modificators.PropsFromItem<Item, IdKey>, {}> {
+export default function connectModificators<RealType, IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string, Metadata>(
+    model: Model<RealType, any, IdKey, any, {}, Metadata>,
+): InferableComponentEnhancerWithProps<Modificators.PropsFromItem<RealType, IdKey>, {}> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent>> = (props) => {
             const result = useModificators(model)

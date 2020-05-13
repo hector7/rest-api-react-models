@@ -18,12 +18,11 @@ export namespace Get {
 
 
 export function useGetPopulated<
-    ItemType extends SchemaNamespace.Item,
-    RealType extends SchemaNamespace.RealType<ItemType>,
-    PopulatedType extends SchemaNamespace.Type<ItemType>,
+    RealType,
+    PopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Metadata>(
-        model: Model<ItemType, RealType, PopulatedType, IdKey, any, {}, Metadata>,
+        model: Model<RealType, PopulatedType, IdKey, any, {}, Metadata>,
         queryString?: string
     ): Get.PromsFromItem<PopulatedType> {
     const { fetchPopulatedIfNeeded } = model.actions
@@ -60,9 +59,9 @@ export function useGetPopulated<
 }
 
 
-function useGetBasic<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.Type<ItemType>, Metadata>(
-    model: Model<ItemType, any, Item, any, any, {}, Metadata>,
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item>, { queryString?: string }> {
+function useGetBasic<PopulatedType, Metadata>(
+    model: Model<any, PopulatedType, any, any, {}, Metadata>,
+): InferableComponentEnhancerWithProps<Get.PromsFromItem<PopulatedType>, { queryString?: string }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
             queryString?: string
@@ -74,17 +73,17 @@ function useGetBasic<ItemType extends SchemaNamespace.Item, Item extends SchemaN
         return ObjectRaising
     }
 }
-function useGetExtended<ItemType extends SchemaNamespace.Item, Item extends SchemaNamespace.Type<ItemType>, Metadata, Name extends string>(
-    model: Model<ItemType, any, Item, any, any, {}, Metadata>,
+function useGetExtended<PopulatedType, Metadata, Name extends string>(
+    model: Model<any, PopulatedType, any, any, {}, Metadata>,
     name: Name
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item, Name>, { queryString?: string }> {
+): InferableComponentEnhancerWithProps<Get.PromsFromItem<PopulatedType, Name>, { queryString?: string }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
             queryString?: string
         }
         > = (props) => {
             const { items, ...otherPropsOfResult } = useGetPopulated(model, props.queryString)
-            const result: Get.PromsFromItem<Item, Name> = <any>{
+            const result: Get.PromsFromItem<PopulatedType, Name> = <any>{
                 ...otherPropsOfResult,
                 [name]: items,
 
@@ -97,23 +96,21 @@ function useGetExtended<ItemType extends SchemaNamespace.Item, Item extends Sche
 
 
 export default function connectGet<
-    ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.Type<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    PopulatedType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Metadata
 >(
-    model: Model<ItemType, any, Item, IdKey, any, {}, Metadata>,
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item>, { queryString?: string }>
+    model: Model<any, PopulatedType, IdKey, any, {}, Metadata>,
+): InferableComponentEnhancerWithProps<Get.PromsFromItem<PopulatedType>, { queryString?: string }>
 export default function connectGet<
-    ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.Type<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    PopulatedType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Metadata,
     Name extends string
 >(
-    mmodel: Model<ItemType, any, Item, IdKey, any, {}, Metadata>,
+    mmodel: Model<any, PopulatedType, IdKey, any, {}, Metadata>,
     name: Name
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<Item, Name>, { queryString?: string }>
+): InferableComponentEnhancerWithProps<Get.PromsFromItem<PopulatedType, Name>, { queryString?: string }>
 export default function connectGet<Name extends string = 'items'>(
     model: any,
     name?: Name

@@ -14,20 +14,19 @@ type RouteOpts = {
     };
 };
 
-export default class Model<ItemType extends SchemaNamespace.Item,
-    RealType extends SchemaNamespace.RealType<ItemType>,
-    PopulatedType extends SchemaNamespace.Type<ItemType>,
+export default class Model<RealType,
+    PopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Name extends string,
     GetItemType extends SchemaNamespace.Item = never,
     GetItem extends SchemaNamespace.RealType<GetItemType> = never,
-    MetaData = null> extends OriginalModel<ItemType, RealType, PopulatedType, IdKey, Name, GetItemType, GetItem, MetaData> {
+    MetaData = null> extends OriginalModel<RealType, PopulatedType, IdKey, Name, GetItemType, GetItem, MetaData> {
 
-    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), routeOpts?: RouteOpts)
-    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], routeOpts?: RouteOpts)
-    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, )
-    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItemType, GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, opts: RouteOpts)
-    constructor(schema: Schema<ItemType, RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructureOrRouteOpts?: Schema<GetItemType, GetItem, any> | RouteOpts, getItems?: (el: GetItem) => RealType[], getMetaDataOrRouteOpts?: ((el: GetItem) => MetaData) | RouteOpts, opts?: RouteOpts) {
+    constructor(schema: Schema<RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), routeOpts?: RouteOpts)
+    constructor(schema: Schema<RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItem, any>, getItems: (el: GetItem) => RealType[], routeOpts?: RouteOpts)
+    constructor(schema: Schema<RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, )
+    constructor(schema: Schema<RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, opts: RouteOpts)
+    constructor(schema: Schema<RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructureOrRouteOpts?: Schema<GetItem, any> | RouteOpts, getItems?: (el: GetItem) => RealType[], getMetaDataOrRouteOpts?: ((el: GetItem) => MetaData) | RouteOpts, opts?: RouteOpts) {
         super(schema, name, id, url, <any>itemStructureOrRouteOpts, getItems!, <any>getMetaDataOrRouteOpts!, opts!)
     }
 
@@ -62,7 +61,7 @@ export default class Model<ItemType extends SchemaNamespace.Item,
     public connectGet<Name extends string = 'items'>(
         name?: Name
     ) {
-        return connectGet<ItemType, RealType, IdKey, MetaData, Name>(this, name!)
+        return connectGet<RealType, IdKey, MetaData, Name>(this, name!)
     }
     public connectGetPopulated(): InferableComponentEnhancerWithProps<GetPopulated.PromsFromItem<PopulatedType>, { queryString?: string }>
     public connectGetPopulated<Name extends string>(
@@ -71,7 +70,7 @@ export default class Model<ItemType extends SchemaNamespace.Item,
     public connectGetPopulated<Name extends string = 'items'>(
         name?: Name
     ) {
-        return connectGetPopulated<ItemType, PopulatedType, IdKey, MetaData, Name>(this, name!)
+        return connectGetPopulated<PopulatedType, IdKey, MetaData, Name>(this, name!)
     }
 
     public connectGetById(): InferableComponentEnhancerWithProps<GetById.PromsFromItem<RealType>, { id: RealType[IdKey] }>
@@ -105,18 +104,17 @@ export default class Model<ItemType extends SchemaNamespace.Item,
     }
 }
 
-export class Schema<ItemType extends SchemaNamespace.Item,
-    RealType extends SchemaNamespace.RealType<ItemType>,
-    PopulatedType extends SchemaNamespace.Type<ItemType>> extends SchemaClass<ItemType, RealType, PopulatedType>{
+export class Schema<RealType,
+    PopulatedType> extends SchemaClass<RealType, PopulatedType>{
     protected _fieldIsBasicModel(property: any): property is OriginalModel<any, any, any, any, any, any> {
         if (super._fieldIsBasicModel(property)) return true
         return property.constructor === Model
     }
-    protected fieldIsSchema(property: any): property is SchemaClass<any, any, any> {
+    protected fieldIsSchema(property: any): property is SchemaClass<any, any> {
         if (super.fieldIsSchema(property)) return true
         return property.constructor === Schema
     }
-    _getModelValues(item: RealType, callback: (model: OriginalModel<any, any, any, any, any, any, any, any>, id: any) => void) {
+    _getModelValues(item: RealType, callback: (model: OriginalModel<any, any, any, any, any, any, any>, id: any) => void) {
         super._getModelValues(item, callback)
     }
 }

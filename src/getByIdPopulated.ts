@@ -17,19 +17,18 @@ export namespace GetById {
 
 
 
-export function useGetByIdPopulated<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.Type<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string>(
-        model: Model<ItemType, any, Item, IdKey, any, {}, any>,
-        id: Item[IdKey]
-    ): GetById.PromsFromItem<Item> {
+export function useGetByIdPopulated<PopulatedType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string>(
+        model: Model<any, PopulatedType, IdKey, any, {}, any>,
+        id: PopulatedType[IdKey]
+    ): GetById.PromsFromItem<PopulatedType> {
     const { fetchByIdPopulatedIfNeeded } = model.actions
-    type Result = GetById.PromsFromItem<Item>
+    type Result = GetById.PromsFromItem<PopulatedType>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
     const { getByIdPopulated, isFetchingById, isInvalidatedById, getErrorById } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: GetById.PromsFromItem<Item> = {
+        const resultState: GetById.PromsFromItem<PopulatedType> = {
             item: getByIdPopulated(state, id),
             loading: isFetchingById(state, id),
             invalidated: isInvalidatedById(state, id),
@@ -45,14 +44,13 @@ export function useGetByIdPopulated<ItemType extends SchemaNamespace.Item,
 }
 
 
-function useGetBasic<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.Type<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string>(
-        model: Model<ItemType, any, Item, IdKey, any, {}, any>,
-): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item>, { id: Item[IdKey] }> {
+function useGetBasic<PopulatedType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string>(
+        model: Model<any, PopulatedType, IdKey, any, {}, any>,
+): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType>, { id: PopulatedType[IdKey] }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
-            id: Item[IdKey]
+            id: PopulatedType[IdKey]
         }
         > = (props) => {
             const result = useGetByIdPopulated(model, props.id)
@@ -61,19 +59,18 @@ function useGetBasic<ItemType extends SchemaNamespace.Item,
         return ObjectRaising
     }
 }
-function useGetExtended<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.Type<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string, Name extends string>(
-        model: Model<ItemType, any, Item, IdKey, any, {}, {}, any>,
+function useGetExtended<PopulatedType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string, Name extends string>(
+        model: Model<any, PopulatedType, IdKey, any, {}, {}, any>,
         name: Name
-    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item, Name>, { id: Item[IdKey] }> {
+    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType, Name>, { id: PopulatedType[IdKey] }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
-            id: Item[IdKey]
+            id: PopulatedType[IdKey]
         }
         > = (props) => {
             const { item, ...otherPropsOfResult } = useGetByIdPopulated(model, props.id)
-            const result: GetById.PromsFromItem<Item, Name> = <any>{
+            const result: GetById.PromsFromItem<PopulatedType, Name> = <any>{
                 ...otherPropsOfResult,
                 [name]: item,
 
@@ -84,18 +81,17 @@ function useGetExtended<ItemType extends SchemaNamespace.Item,
     }
 }
 
-function useGetExtendedRenamed<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.Type<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+function useGetExtendedRenamed<PopulatedType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Name extends string, idPropName extends string>(
-        model: Model<ItemType, any, Item, IdKey, any, {}, {}, any>,
+        model: Model<any, PopulatedType, IdKey, any, {}, {}, any>,
         name: Name,
         idPropName: idPropName
-    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item, Name>, Record<idPropName, Item[IdKey]>> {
+    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType, Name>, Record<idPropName, PopulatedType[IdKey]>> {
     return (ReactComponent): any => {
-        const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & Record<idPropName, Item[IdKey]>> = (props) => {
+        const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & Record<idPropName, PopulatedType[IdKey]>> = (props) => {
             const { item, ...otherPropsOfResult } = useGetByIdPopulated(model, <any>props[idPropName])
-            const result: GetById.PromsFromItem<Item, Name> = <any>{
+            const result: GetById.PromsFromItem<PopulatedType, Name> = <any>{
                 ...otherPropsOfResult,
                 [name]: item,
 
@@ -106,26 +102,23 @@ function useGetExtendedRenamed<ItemType extends SchemaNamespace.Item,
     }
 }
 
-export default function connectGetById<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.Type<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string>(
-        model: Model<ItemType, any, Item, IdKey, any, any, any, any>,
-): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item>, { id: Item[IdKey] }>
-export default function connectGetById<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.Type<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+export default function connectGetById<PopulatedType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string>(
+        model: Model<any, PopulatedType, IdKey, any, any, any, any>,
+): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType>, { id: PopulatedType[IdKey] }>
+export default function connectGetById<PopulatedType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Name extends string>(
-        model: Model<ItemType, any, Item, IdKey, any, any, any, any>,
+        model: Model<any, PopulatedType, IdKey, any, any, any, any>,
         propertyName: Name
-    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item, Name>, { id: Item[IdKey] }>;
-export default function connectGetById<ItemType extends SchemaNamespace.Item,
-    Item extends SchemaNamespace.Type<ItemType>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<Item> & string,
+    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType, Name>, { id: PopulatedType[IdKey] }>;
+export default function connectGetById<PopulatedType,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Name extends string, idPropName extends string>(
-        model: Model<ItemType, any, Item, IdKey, any, any, any, any>,
+        model: Model<any, PopulatedType, IdKey, any, any, any, any>,
         propertyName: Name,
         idPropName: idPropName
-    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<Item, Name>, Record<idPropName, Item[IdKey]>>;
+    ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType, Name>, Record<idPropName, PopulatedType[IdKey]>>;
 export default function connectGetById(
     model: Model<any, any, any, any, any, any, any>,
     name?: string,
