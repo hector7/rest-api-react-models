@@ -16,4 +16,4 @@ const UserHasLevelSchema = Schema({
 
 export type UserHasLevelType = ModelType<typeof UserHasLevelSchema>
 export type UserHasLevelPopulatedType = ModelPopulatedType<typeof UserHasLevelSchema>
-export default new Model(UserHasLevelSchema, 'user_has_level', 'id', '/api/user_has_level', { trailingSlash: true })
+export default new Model(UserHasLevelSchema, 'id', '/api/user_has_level', { trailingSlash: true })

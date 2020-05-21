@@ -21,7 +21,7 @@ export function useModificators<
     RealType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Metadata>(
-        model: Model<RealType, any, IdKey, any, {}, Metadata>,
+        model: Model<RealType, any, any, IdKey, any, Metadata>,
 ): Modificators.PropsFromItem<RealType, IdKey> {
     const { post, put, patch, delete: remove, invalidate, invalidateAll } = model.actions
     const dispatch = useDispatch()
@@ -37,7 +37,7 @@ export function useModificators<
 
 
 export default function connectModificators<RealType, IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string, Metadata>(
-    model: Model<RealType, any, IdKey, any, {}, Metadata>,
+    model: Model<RealType, any, any, IdKey, any, Metadata>,
 ): InferableComponentEnhancerWithProps<Modificators.PropsFromItem<RealType, IdKey>, {}> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent>> = (props) => {

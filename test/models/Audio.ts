@@ -6,4 +6,4 @@ const Audio = Schema({
     filename: { type: String, required },
 })
 export type AudioType = ModelType<typeof Audio>
-export default new Model(Audio, 'Audio', 'id', '/api/audio', { trailingSlash: true })
+export default new Model(Audio, 'id', '/api/audio', { trailingSlash: true })

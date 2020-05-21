@@ -1,6 +1,4 @@
-import  React  from  'react'
-    
-import { Model, Schema, required } from  '..'
+import { Model, Schema, required } from '..'
 
 const nameSchema = Schema({
     id: {
@@ -10,4 +8,4 @@ const nameSchema = Schema({
     name: String
 })
 
-export default new Model(nameSchema, 'model naem', 'id', '/api/example')
+export default new Model(nameSchema, 'id', '/api/example', { trailingSlash: true, headers: { Authorization: 'Basic xxxxxx' } })

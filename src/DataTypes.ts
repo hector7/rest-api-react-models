@@ -16,18 +16,17 @@ type RouteOpts = {
 
 export default class Model<RealType,
     PopulatedType,
+    FullPopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
-    Name extends string,
-    GetItemType extends SchemaNamespace.Item = never,
-    GetItem extends SchemaNamespace.RealType<GetItemType> = never,
-    MetaData = null> extends OriginalModel<RealType, PopulatedType, IdKey, Name, GetItemType, GetItem, MetaData> {
+    GetItem,
+    MetaData = null> extends OriginalModel<RealType, PopulatedType, FullPopulatedType, IdKey, GetItem, MetaData> {
 
-    constructor(schema: Schema<RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), routeOpts?: RouteOpts)
-    constructor(schema: Schema<RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItem, any>, getItems: (el: GetItem) => RealType[], routeOpts?: RouteOpts)
-    constructor(schema: Schema<RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, )
-    constructor(schema: Schema<RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructure: Schema<GetItem, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, opts: RouteOpts)
-    constructor(schema: Schema<RealType, PopulatedType>, name: Name, id: IdKey, url: string | (() => string), itemStructureOrRouteOpts?: Schema<GetItem, any> | RouteOpts, getItems?: (el: GetItem) => RealType[], getMetaDataOrRouteOpts?: ((el: GetItem) => MetaData) | RouteOpts, opts?: RouteOpts) {
-        super(schema, name, id, url, <any>itemStructureOrRouteOpts, getItems!, <any>getMetaDataOrRouteOpts!, opts!)
+    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, routeOpts?: RouteOpts)
+    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructure: Schema<GetItem, any, any>, getItems: (el: GetItem) => RealType[], routeOpts?: RouteOpts)
+    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructure: Schema<GetItem, any, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, )
+    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructure: Schema<GetItem, any, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, opts: RouteOpts)
+    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructureOrRouteOpts?: Schema<GetItem, any, any> | RouteOpts, getItems?: (el: GetItem) => RealType[], getMetaDataOrRouteOpts?: ((el: GetItem) => MetaData) | RouteOpts, opts?: RouteOpts) {
+        super(schema, id, url, <any>itemStructureOrRouteOpts, getItems!, <any>getMetaDataOrRouteOpts!, opts!)
     }
 
     public useGet(queryString?: string) {
@@ -105,16 +104,17 @@ export default class Model<RealType,
 }
 
 export class Schema<RealType,
-    PopulatedType> extends SchemaClass<RealType, PopulatedType>{
-    protected _fieldIsBasicModel(property: any): property is OriginalModel<any, any, any, any, any, any> {
-        if (super._fieldIsBasicModel(property)) return true
+    PopulatedType, FullPopulatedType> extends SchemaClass<RealType, PopulatedType, FullPopulatedType>{
+    protected _fieldIsAnIdModel(property: any): property is OriginalModel<any, any, any, any, any, any> {
+        if (super._fieldIsAnIdModel(property)) return true
         return property.constructor === Model
     }
-    protected fieldIsSchema(property: any): property is SchemaClass<any, any> {
+    protected fieldIsSchema(property: any): property is SchemaClass<any, any, any> {
         if (super.fieldIsSchema(property)) return true
         return property.constructor === Schema
     }
-    _getModelValues(item: RealType, callback: (model: OriginalModel<any, any, any, any, any, any, any>, id: any) => void) {
+    /*
+    _getModelValues(item: RealType, callback: (model: OriginalModel<any, any, any, any, any, any>, id: any) => void) {
         super._getModelValues(item, callback)
-    }
+    }*/
 }

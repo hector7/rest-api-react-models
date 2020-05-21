@@ -10,4 +10,4 @@ const TutorSchema = Schema({
     admin: { type: Boolean, required }
 })
 
-export default new Model(TutorSchema, 'tutor', 'id', '/api/tutor', { trailingSlash: true })
+export default new Model(TutorSchema, 'id', '/api/tutor', { trailingSlash: true })

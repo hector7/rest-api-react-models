@@ -19,20 +19,20 @@ export namespace GetById {
 
 export function useGetByIdPopulated<PopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string>(
-        model: Model<any, PopulatedType, IdKey, any, {}, any>,
+        model: Model<any, PopulatedType, any, IdKey, any, any>,
         id: PopulatedType[IdKey]
     ): GetById.PromsFromItem<PopulatedType> {
     const { fetchByIdPopulatedIfNeeded } = model.actions
     type Result = GetById.PromsFromItem<PopulatedType>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
-    const { getByIdPopulated, isFetchingById, isInvalidatedById, getErrorById } = model.utils
+    const { getByIdPopulated, isIdFetching, isIdInvalidated, getIdError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: GetById.PromsFromItem<PopulatedType> = {
             item: getByIdPopulated(state, id),
-            loading: isFetchingById(state, id),
-            invalidated: isInvalidatedById(state, id),
-            error: getErrorById(state, id),
+            loading: isIdFetching(state, id),
+            invalidated: isIdInvalidated(state, id),
+            error: getIdError(state, id),
         }
         return resultState
     })
@@ -61,7 +61,7 @@ function useGetBasic<PopulatedType,
 }
 function useGetExtended<PopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string, Name extends string>(
-        model: Model<any, PopulatedType, IdKey, any, {}, {}, any>,
+        model: Model<any, PopulatedType, any, IdKey, any, any>,
         name: Name
     ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType, Name>, { id: PopulatedType[IdKey] }> {
     return (ReactComponent): any => {
@@ -84,7 +84,7 @@ function useGetExtended<PopulatedType,
 function useGetExtendedRenamed<PopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Name extends string, idPropName extends string>(
-        model: Model<any, PopulatedType, IdKey, any, {}, {}, any>,
+        model: Model<any, PopulatedType, any, IdKey, any, any>,
         name: Name,
         idPropName: idPropName
     ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType, Name>, Record<idPropName, PopulatedType[IdKey]>> {
@@ -104,23 +104,23 @@ function useGetExtendedRenamed<PopulatedType,
 
 export default function connectGetById<PopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string>(
-        model: Model<any, PopulatedType, IdKey, any, any, any, any>,
+        model: Model<any, PopulatedType, any, IdKey, any, any>,
 ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType>, { id: PopulatedType[IdKey] }>
 export default function connectGetById<PopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Name extends string>(
-        model: Model<any, PopulatedType, IdKey, any, any, any, any>,
+        model: Model<any, PopulatedType, any, IdKey, any, any>,
         propertyName: Name
     ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType, Name>, { id: PopulatedType[IdKey] }>;
 export default function connectGetById<PopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Name extends string, idPropName extends string>(
-        model: Model<any, PopulatedType, IdKey, any, any, any, any>,
+        model: Model<any, PopulatedType, any, IdKey, any, any>,
         propertyName: Name,
         idPropName: idPropName
     ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<PopulatedType, Name>, Record<idPropName, PopulatedType[IdKey]>>;
 export default function connectGetById(
-    model: Model<any, any, any, any, any, any, any>,
+    model: Model<any, any, any, any, any, any>,
     name?: string,
     idPropName?: string
 ): InferableComponentEnhancerWithProps<GetById.PromsFromItem<any, any>, any> {

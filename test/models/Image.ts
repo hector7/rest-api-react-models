@@ -6,4 +6,4 @@ const Image = Schema({
     name: { type: String, required },
 })
 export type ImageType = ModelType<typeof Image>
-export default new Model(Image, 'Image', 'id', '/api/image', { trailingSlash: true })
+export default new Model(Image, 'id', '/api/image', { trailingSlash: true })

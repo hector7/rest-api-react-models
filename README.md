@@ -10,6 +10,9 @@ Benefits:
 
 Caution: if you have some random typescript error (pex: ts2589) on creating or editing models, kill the process and restart npm start (on Visual Studio Code restart program).
 
+## Major changes
+On model creation don't need to pass a model name. This major includes a refactor and some bug fixes and features.
+
 ## File structure
 This code examples follows this src structure:
 ```
@@ -53,7 +56,6 @@ Declare the models of your application, given a Schema, an id (need to be requir
         name: String
     })
     export  default  new  Model(librarySchema, 
-	    'model name (only for debug purpose raising errors)', 
 	    'id', 
 	    '/api/library')
 
@@ -84,7 +86,11 @@ And foreign keys of your model can be representated:
     })
     export type BookType = ModelType<typeof bookSchema>
 	export type BookPopulatedType = ModelPopulatedType<typeof bookSchema>
-	export default new Model(bookSchema, 'books', 'id', '/api/book')
+	export default new Model(bookSchema, 'id', '/api/book')
+
+An option can be passed to model declaration in order to works with django "trailing slash" or pass custom headers:
+
+	new Model(bookSchema, 'id', '/api/book', { trailingSlash: true, headers: { Authorization: "Basic xxxx" } })
 
 
 ## Using on the container

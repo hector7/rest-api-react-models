@@ -26,4 +26,4 @@ const ExerciseSchema = Schema({
     type: { type: String, required },
 })
 export type ExerciseType = ModelType<typeof ExerciseSchema>
-export default new Model(ExerciseSchema, 'exercise', 'id', '/api/exercise', { trailingSlash: true })
+export default new Model(ExerciseSchema, 'id', '/api/exercise', { trailingSlash: true })

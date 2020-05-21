@@ -11,4 +11,4 @@ const bookSchema = Schema({
 })
 export type BookType = ModelType<typeof bookSchema>
 export type BookPopulatedType = ModelPopulatedType<typeof bookSchema>
-export default new Model(bookSchema, 'modelName (only for debug purpose raising errors)', 'id', '/api/example')
+export default new Model(bookSchema, 'id', '/api/example')

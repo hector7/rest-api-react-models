@@ -5,4 +5,4 @@ const Center = Schema({
     name: { type: String, required },
 })
 
-export default new Model(Center, 'center', 'id', '/api/center', { trailingSlash: true })
+export default new Model(Center, 'id', '/api/center', { trailingSlash: true })

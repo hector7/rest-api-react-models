@@ -13,4 +13,4 @@ const TutorSchema = Schema({
     birth_year: { type: Number, required },
 })
 
-export default new Model(TutorSchema, 'user', 'id', '/api/user', { trailingSlash: true })
+export default new Model(TutorSchema, 'id', '/api/user', { trailingSlash: true })

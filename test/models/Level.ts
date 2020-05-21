@@ -7,4 +7,4 @@ const Level = Schema({
 })
 
 export type LevelType = ModelType<typeof Level>
-export default new Model(Level, 'level', 'id', '/api/level', { trailingSlash: true })
+export default new Model(Level, 'id', '/api/level', { trailingSlash: true })

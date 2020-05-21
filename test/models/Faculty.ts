@@ -8,4 +8,4 @@ const Faculty = Schema({
 
 export type FacultyType = ModelType<typeof Faculty>
 
-export default new Model(Faculty, 'faculty', 'id', '/api/faculty', { trailingSlash: true })
+export default new Model(Faculty, 'id', '/api/faculty', { trailingSlash: true })

@@ -5,4 +5,4 @@ const DiagnosisSchema = Schema({
     name: { type: String, required }
 })
 
-export default new Model(DiagnosisSchema, 'diagnosis', 'id', '/api/diagnosis', { trailingSlash: true })
+export default new Model(DiagnosisSchema, 'id', '/api/diagnosis', { trailingSlash: true })

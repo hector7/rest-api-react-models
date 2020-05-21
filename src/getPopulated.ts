@@ -22,7 +22,7 @@ export function useGetPopulated<
     PopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Metadata>(
-        model: Model<RealType, PopulatedType, IdKey, any, {}, Metadata>,
+        model: Model<RealType, PopulatedType, any, IdKey, any, Metadata>,
         queryString?: string
     ): Get.PromsFromItem<PopulatedType> {
     const { fetchPopulatedIfNeeded } = model.actions
@@ -100,7 +100,7 @@ export default function connectGet<
     IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Metadata
 >(
-    model: Model<any, PopulatedType, IdKey, any, {}, Metadata>,
+    model: Model<any, PopulatedType, any, IdKey, any, Metadata>,
 ): InferableComponentEnhancerWithProps<Get.PromsFromItem<PopulatedType>, { queryString?: string }>
 export default function connectGet<
     PopulatedType,
@@ -108,7 +108,7 @@ export default function connectGet<
     Metadata,
     Name extends string
 >(
-    mmodel: Model<any, PopulatedType, IdKey, any, {}, Metadata>,
+    mmodel: Model<any, PopulatedType, any, IdKey, any, Metadata>,
     name: Name
 ): InferableComponentEnhancerWithProps<Get.PromsFromItem<PopulatedType, Name>, { queryString?: string }>
 export default function connectGet<Name extends string = 'items'>(

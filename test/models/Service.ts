@@ -5,4 +5,4 @@ const ServiceSchema = Schema({
     name: { type: String, required }
 })
 
-export default new Model(ServiceSchema, 'diagnosis', 'id', '/api/service', { trailingSlash: true })
+export default new Model(ServiceSchema, 'id', '/api/service', { trailingSlash: true })

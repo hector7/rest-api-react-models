@@ -9,4 +9,4 @@ const Category = Schema({
 })
 
 
-export default new Model(Category, 'faculty', 'id', '/api/category', { trailingSlash: true })
+export default new Model(Category, 'id', '/api/category', { trailingSlash: true })

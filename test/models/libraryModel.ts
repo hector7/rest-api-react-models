@@ -9,4 +9,4 @@ const librarySchema = Schema({
 })
 export type LibraryType = ModelType<typeof librarySchema>
 export type LibraryPopulatedType = ModelPopulatedType<typeof librarySchema>
-export default new Model(librarySchema, 'library', 'id', '/api/library')
+export default new Model(librarySchema, 'id', '/api/library')

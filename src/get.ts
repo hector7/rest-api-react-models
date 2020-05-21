@@ -22,7 +22,7 @@ export function useGet<
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Metadata
 >(
-    model: Model<RealType, any, IdKey, any, {}, Metadata>,
+    model: Model<RealType, any, any, IdKey, any, Metadata>,
     queryString?: string
 ): Get.PromsFromItem<RealType> {
     const { fetchIfNeeded } = model.actions
@@ -56,7 +56,7 @@ export function useGet<
 
 
 function useGetBasic<RealType, Metadata>(
-    model: Model<RealType, any, any, any, {}, Metadata>,
+    model: Model<RealType, any, any, any, any, Metadata>,
 ): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
@@ -70,7 +70,7 @@ function useGetBasic<RealType, Metadata>(
     }
 }
 function useGetExtended<RealType, Metadata, Name extends string>(
-    model: Model<RealType, any, any, any, {}, Metadata>,
+    model: Model<RealType, any, any, any, any, Metadata>,
     name: Name
 ): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType, Name>, { queryString?: string }> {
     return (ReactComponent): any => {
@@ -96,14 +96,14 @@ export default function connectGet<
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Metadata
 >(
-    model: Model<RealType, any, IdKey, any, {}, Metadata>,
+    model: Model<RealType, any, any, IdKey, any, Metadata>,
 ): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string }>
 export default function connectGet<
     RealType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Metadata,
     Name extends string>(
-        mmodel: Model<RealType, any, IdKey, any, {}, Metadata>,
+        mmodel: Model<RealType, any, any, IdKey, any, Metadata>,
         name: Name
     ): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType, Name>, { queryString?: string }>
 export default function connectGet<Name extends string = 'items'>(
