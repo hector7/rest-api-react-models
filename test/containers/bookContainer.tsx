@@ -18,15 +18,15 @@ bookModel.connectGet()(BookContainer)
 
 const bookContainer: React.FC<{}> = () => {
     const { items } = bookModel.useGet()
-    const { items: itemsPopulated, loading, error } = bookModel.useGetPopulated()
+    const { loading, error, ...r } = bookModel.useGetPopulated()
     const { item } = bookModel.useGetById(1)
-    const { item: itemPopulated } = bookModel.useGetByIdPopulated(1)
+    const { ...result } = bookModel.useGetByIdPopulated(1)
     if (error) return <p>There are an error with the request</p>
     if (loading) return <p>Loading...</p>
     return <ul>
         {items.map(i => <BookView name={i.name} />)}
-        {itemsPopulated.map(i => <BookView name={i.library!.name} />)}
+        {r.populated ? r.items.map(i => <BookView name={i.library.name} />) : null}
         {< li > Item: {item!.name}</li>}
-        {<li>Item populated: {itemPopulated!.library!.id}</li>}
+        {result.populated && <li>Item populated: {result.item.library.id}</li>}
     </ul>
 }

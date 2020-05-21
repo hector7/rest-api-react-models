@@ -1,4 +1,4 @@
-import { Model, ModelType, ModelPopulatedType, Schema, required } from '../..'
+import { Model, ModelType, PopulatedModelType, FullPopulatedModelType, Schema, required } from '../..'
 import libraryModel from './libraryModel'
 
 const bookSchema = Schema({
@@ -7,8 +7,9 @@ const bookSchema = Schema({
         required
     },
     name: String,
-    library: libraryModel
+    library: {type: libraryModel, required}
 })
 export type BookType = ModelType<typeof bookSchema>
-export type BookPopulatedType = ModelPopulatedType<typeof bookSchema>
+export type BookPopulatedType = PopulatedModelType<typeof bookSchema>
+export type BookFullPopulatedType = FullPopulatedModelType<typeof bookSchema>
 export default new Model(bookSchema, 'id', '/api/example')

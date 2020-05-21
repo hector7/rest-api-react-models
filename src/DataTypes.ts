@@ -19,21 +19,13 @@ export default class Model<RealType,
     FullPopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     GetItem,
-    MetaData = null> extends OriginalModel<RealType, PopulatedType, FullPopulatedType, IdKey, GetItem, MetaData> {
+    MetaData> extends OriginalModel<RealType, PopulatedType, FullPopulatedType, IdKey, GetItem, MetaData> {
 
-    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, routeOpts?: RouteOpts)
-    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructure: Schema<GetItem, any, any>, getItems: (el: GetItem) => RealType[], routeOpts?: RouteOpts)
-    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructure: Schema<GetItem, any, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, )
-    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructure: Schema<GetItem, any, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, opts: RouteOpts)
-    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructureOrRouteOpts?: Schema<GetItem, any, any> | RouteOpts, getItems?: (el: GetItem) => RealType[], getMetaDataOrRouteOpts?: ((el: GetItem) => MetaData) | RouteOpts, opts?: RouteOpts) {
-        super(schema, id, url, <any>itemStructureOrRouteOpts, getItems!, <any>getMetaDataOrRouteOpts!, opts!)
-    }
-
-    public useGet(queryString?: string) {
+    public useGet(queryString?: string | URLSearchParams) {
         return useGet(this, queryString)
     }
 
-    public useGetPopulated(queryString?: string) {
+    public useGetPopulated(queryString?: string | URLSearchParams) {
         return useGetPopulated(this, queryString)
     }
 
@@ -53,23 +45,23 @@ export default class Model<RealType,
         return connectModificators(this)
     }
 
-    public connectGet(): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string }>
+    public connectGet(): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string | URLSearchParams }>
     public connectGet<Name extends string>(
         name: Name
-    ): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType, Name>, { queryString?: string }>
+    ): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType, Name>, { queryString?: string | URLSearchParams }>
     public connectGet<Name extends string = 'items'>(
         name?: Name
     ) {
         return connectGet<RealType, IdKey, MetaData, Name>(this, name!)
     }
-    public connectGetPopulated(): InferableComponentEnhancerWithProps<GetPopulated.PromsFromItem<PopulatedType>, { queryString?: string }>
+    public connectGetPopulated(): InferableComponentEnhancerWithProps<GetPopulated.PromsFromItem<PopulatedType, FullPopulatedType>, { queryString?: string | URLSearchParams }>
     public connectGetPopulated<Name extends string>(
         name: Name
-    ): InferableComponentEnhancerWithProps<GetPopulated.PromsFromItem<PopulatedType, Name>, { queryString?: string }>
+    ): InferableComponentEnhancerWithProps<GetPopulated.PromsFromItem<PopulatedType, FullPopulatedType, Name>, { queryString?: string | URLSearchParams }>
     public connectGetPopulated<Name extends string = 'items'>(
         name?: Name
     ) {
-        return connectGetPopulated<PopulatedType, IdKey, MetaData, Name>(this, name!)
+        return connectGetPopulated<PopulatedType, FullPopulatedType, IdKey, MetaData, Name>(this, name!)
     }
 
     public connectGetById(): InferableComponentEnhancerWithProps<GetById.PromsFromItem<RealType>, { id: RealType[IdKey] }>
@@ -87,18 +79,18 @@ export default class Model<RealType,
         return connectGetById(this, name!, idPropName!)
     }
 
-    public connectGetByIdPopulated(): InferableComponentEnhancerWithProps<GetByIdPopulated.PromsFromItem<PopulatedType>, { id: RealType[IdKey] }>
+    public connectGetByIdPopulated(): InferableComponentEnhancerWithProps<GetByIdPopulated.PromsFromItem<PopulatedType, FullPopulatedType>, { id: RealType[IdKey] }>
     public connectGetByIdPopulated<Name extends string>(
         propertyName: Name
-    ): InferableComponentEnhancerWithProps<GetByIdPopulated.PromsFromItem<PopulatedType, Name>, { id: RealType[IdKey] }>;
+    ): InferableComponentEnhancerWithProps<GetByIdPopulated.PromsFromItem<PopulatedType, FullPopulatedType, Name>, { id: RealType[IdKey] }>;
     public connectGetByIdPopulated<Name extends string, idPropName extends string>(
         propertyName: Name,
         idPropName: idPropName
-    ): InferableComponentEnhancerWithProps<GetByIdPopulated.PromsFromItem<PopulatedType, Name>, Record<idPropName, RealType[IdKey]>>;
+    ): InferableComponentEnhancerWithProps<GetByIdPopulated.PromsFromItem<PopulatedType, FullPopulatedType, Name>, Record<idPropName, RealType[IdKey]>>;
     public connectGetByIdPopulated(
         name?: string,
         idPropName?: string
-    ): InferableComponentEnhancerWithProps<GetByIdPopulated.PromsFromItem<any, any>, any> {
+    ): InferableComponentEnhancerWithProps<GetByIdPopulated.PromsFromItem<any, FullPopulatedType, any>, any> {
         return connectGetByIdPopulated(this, name!, idPropName!)
     }
 }

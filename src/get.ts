@@ -23,7 +23,7 @@ export function useGet<
     Metadata
 >(
     model: Model<RealType, any, any, IdKey, any, Metadata>,
-    queryString?: string
+    queryString?: string | URLSearchParams
 ): Get.PromsFromItem<RealType> {
     const { fetchIfNeeded } = model.actions
     type Result = Get.PromsFromItem<RealType> & { state: ReducerNamespace.ReducerType }
@@ -33,21 +33,21 @@ export function useGet<
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: Get.PromsFromItem<RealType> & { state: ReducerNamespace.ReducerType } = {
             state,
-            items: get(state, queryString),
-            loading: isFetching(state, queryString),
-            invalidated: isInvalidated(state, queryString),
-            error: getError(state, queryString),
+            items: get(state, queryString?.toString()),
+            loading: isFetching(state, queryString?.toString()),
+            invalidated: isInvalidated(state, queryString?.toString()),
+            error: getError(state, queryString?.toString()),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(fetchIfNeeded(queryString))
+        dispatch(fetchIfNeeded(queryString?.toString()))
         const { items: currentItems, ...currentState } = state
         const { items: prevItems, ...prevState } = result
         if (!shallowEqual(prevState, currentState)) setResult(state)
         else if (currentItems.length !== prevItems.length) setResult(state)
         else if (currentItems.some((item, key) => {
-            return item !== model.utils.get(prevState.state, queryString)[key]
+            return item !== model.utils.get(prevState.state, queryString?.toString())[key]
         })) setResult(state)
     })
     const { state: currentSate, ...other } = state
@@ -57,7 +57,7 @@ export function useGet<
 
 function useGetBasic<RealType, Metadata>(
     model: Model<RealType, any, any, any, any, Metadata>,
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string }> {
+): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string | URLSearchParams }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
             queryString?: string
@@ -72,10 +72,10 @@ function useGetBasic<RealType, Metadata>(
 function useGetExtended<RealType, Metadata, Name extends string>(
     model: Model<RealType, any, any, any, any, Metadata>,
     name: Name
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType, Name>, { queryString?: string }> {
+): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType, Name>, { queryString?: string | URLSearchParams }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
-            queryString?: string
+            queryString?: string | URLSearchParams
         }
         > = (props) => {
             const { items, ...otherPropsOfResult } = useGet(model, props.queryString)
@@ -97,7 +97,7 @@ export default function connectGet<
     Metadata
 >(
     model: Model<RealType, any, any, IdKey, any, Metadata>,
-): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string }>
+): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType>, { queryString?: string | URLSearchParams }>
 export default function connectGet<
     RealType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
@@ -105,7 +105,7 @@ export default function connectGet<
     Name extends string>(
         mmodel: Model<RealType, any, any, IdKey, any, Metadata>,
         name: Name
-    ): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType, Name>, { queryString?: string }>
+    ): InferableComponentEnhancerWithProps<Get.PromsFromItem<RealType, Name>, { queryString?: string | URLSearchParams }>
 export default function connectGet<Name extends string = 'items'>(
     model: any,
     name?: Name

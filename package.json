@@ -34,6 +34,15 @@
   "author": "hector.rbs91@gmail.com",
   "license": "ISC",
   "homepage": "https://github.com/hector7/rest-api-react-models",
+  "keywords": [
+    "react-plugin",
+    "react-fetch",
+    "api",
+    "rest-api",
+    "rest-api-redux",
+    "react-models",
+    "model"
+  ],
   "devDependencies": {
     "@types/chai": "^4.2.4",
     "@types/mocha": "^5.2.7",
@@ -54,8 +63,12 @@
     "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
-    "@rest-api/redux": "^1.0.3",
+    "@rest-api/redux": "^1.1.1",
     "@types/react-redux": "^7.1.5",
     "react-redux": "^7.1.3"
+  },
+  "peerDependencies": {
+    "react-scripts": "^3.4.1",
+    "typescript": "^3.9.3"
   }
 }

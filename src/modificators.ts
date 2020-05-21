@@ -10,7 +10,7 @@ export namespace Modificators {
         patch: (id: Item[IdKey], item: Partial<Item> | FormData, callback: Callback<Item, HttpError>) => any,
         put: (id: Item[IdKey], item: Item | FormData, callback: Callback<Item, HttpError>) => any,
         remove: (item: Item, callback: Callback<undefined, HttpError>) => any,
-        invalidate: (queryString: string) => any,
+        invalidate: (queryString: string | URLSearchParams) => any,
         invalidateAll: () => any
     }
 }
@@ -26,7 +26,7 @@ export function useModificators<
     const { post, put, patch, delete: remove, invalidate, invalidateAll } = model.actions
     const dispatch = useDispatch()
     return {
-        invalidate: (...args) => dispatch(invalidate(...args)),
+        invalidate: (...args) => dispatch(invalidate(args[0]?.toString())),
         invalidateAll: (...args) => dispatch(invalidateAll(...args)),
         patch: (...args) => dispatch(patch(...args)),
         post: (...args) => dispatch(post(...args)),
