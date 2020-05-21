@@ -94,7 +94,7 @@ An option can be passed to model declaration in order to works with django "trai
 
 
 ## Using on the container
-
+### Simple usage
 Once you have created a model, you can use it on a container!
 
 Fist clean mode using Typescript, using a hook:
@@ -114,7 +114,7 @@ Fist clean mode using Typescript, using a hook:
 		}</ul>
 	}
 
-And the "connect" way as a redux container:
+And the "connect" way as a redux container (Note that will be removed on future and it's deprecated):
 
     import  React  from  'react'
 
@@ -137,3 +137,54 @@ And the "connect" way as a redux container:
 		}
 	}
 	export default bookModel.connectGet()(BookContainer)
+
+### Populate items
+You can populate items with a simple usage (you need to check if it's populated):
+
+	import React from 'react'
+
+	import bookModel from '../models/bookmodel'
+	
+	export default () => {
+		const {loading, error, ...result} = bookModel.useGetPopulated()
+
+		if (error) return  <p>There are an error with the request</p>
+		if (loading) return  <p>Loading...</p>
+		if(result.populated)
+			return  <table>
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Name</th>
+						<th>Library name</th>
+					</tr>
+				</thead>
+				<tbody>
+				{
+					result.items.map(i  =>  <React.Fragment key={i.id}>
+						<td>{i.id}</td>
+						<td>{i.name}</td>
+						<td>{i.library.name}</td>
+					</React.Fragment>
+				}
+				</tbody>
+			</table>
+		return  <table>
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Name</th>
+					<th>Library name</th>
+				</tr>
+			</thead>
+			<tbody>
+			{
+				result.items.map(i  =>  <React.Fragment key={i.id}>
+					<td>{i.id}</td>
+					<td>{i.name}</td>
+					<td>{i.library.name ? i.library.name : Loading ...}</td>
+				</React.Fragment>
+			}
+			</tbody>
+		</table>
+	}
