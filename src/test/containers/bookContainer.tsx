@@ -27,6 +27,6 @@ const bookContainer: React.FC<{}> = () => {
         {items.map(i => <BookView name={i.name} />)}
         {r.populated ? r.items.map(i => <BookView name={i.library.name} />) : null}
         {< li > Item: {item!.name}</li>}
-        {result.populated && <li>Item populated: {result.item.library.id}</li>}
+        {result.item && <li>Item populated: {result.item.library.name}</li>}
     </ul>
 }

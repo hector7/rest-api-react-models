@@ -1,4 +1,4 @@
-import { Model, ModelType, PopulatedModelType, FullPopulatedModelType, Schema, required } from '../..'
+import { Model, ModelType, PopulatedModelType, FullPopulatedModelType, Schema, required } from '../../..'
 import libraryModel from './libraryModel'
 
 const bookSchema = Schema({
