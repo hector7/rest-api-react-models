@@ -21,16 +21,6 @@ export default class Model<RealType,
     GetItem,
     MetaData> extends OriginalModel<RealType, PopulatedType, FullPopulatedType, IdKey, GetItem, MetaData> {
 
-    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, routeOpts?: RouteOpts)
-    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructure: Schema<GetItem, any, any>, getItems: (el: GetItem) => RealType[], routeOpts?: RouteOpts)
-    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructure: Schema<GetItem, any, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, )
-    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructure: Schema<GetItem, any, any>, getItems: (el: GetItem) => RealType[], getMetaData: (el: GetItem) => MetaData, opts: RouteOpts)
-    constructor(schema: Schema<RealType, PopulatedType, FullPopulatedType>, id: IdKey, url: string, itemStructureOrRouteOpts?: Schema<GetItem, any, any> | RouteOpts, getItems?: (el: GetItem) => RealType[], getMetaDataOrRouteOpts?: ((el: GetItem) => MetaData) | RouteOpts, finalOpts: RouteOpts = {}) {
-        super(schema, id, url, itemStructureOrRouteOpts as any, getItems as any, getMetaDataOrRouteOpts as any, finalOpts)
-        console.log(schema)
-        console.log(this.itemStructure)
-        console.log(this.trailingSlash)
-    }
     public useGet(queryString?: string | URLSearchParams) {
         return useGet(this, queryString)
     }
