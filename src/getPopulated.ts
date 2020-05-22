@@ -5,11 +5,12 @@ import { Model, HttpError } from '@rest-api/redux'
 import { InferableComponentEnhancerWithProps, shallowEqual, GetProps } from 'react-redux'
 import { useDispatch, useSelector } from '..'
 
-export type PropsFromItem<PartialItem, PopulatedItem, Name extends string = 'items'> = {
+export type PropsFromItem<PartialItem, PopulatedItem, MetaData, Name extends string = 'items'> = {
     populated: true,
     invalidated: boolean;
     error: HttpError | null;
     loading: boolean;
+    metadata: MetaData | null;
 } & {
         [k in Name]: PopulatedItem[];
     } | {
@@ -19,6 +20,7 @@ export type PropsFromItem<PartialItem, PopulatedItem, Name extends string = 'ite
         populated: false,
         invalidated: boolean;
         error: HttpError | null;
+        metadata: MetaData | null;
     }
 
 
@@ -31,18 +33,19 @@ export function useGetPopulated<
     Metadata>(
         model: Model<RealType, PopulatedType, FullPopulatedType, IdKey, any, Metadata>,
         queryString?: string | URLSearchParams
-    ): PropsFromItem<PopulatedType, FullPopulatedType> {
+    ): PropsFromItem<PopulatedType, FullPopulatedType, Metadata> {
     const { fetchPopulatedIfNeeded } = model.actions
-    type Result = PropsFromItem<PopulatedType, FullPopulatedType> & { state: ReducerNamespace.ReducerType }
-    const [result, setResult] = React.useState<Result>({ error: null, populated: false, invalidated: true, loading: false, items: [], state: <any>{} })
-    const { getPopulated, isFetching, isPopulated, isInvalidated, getError } = model.utils
+    type Result = PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType }
+    const [result, setResult] = React.useState<Result>({ error: null, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: <any>{} })
+    const { getPopulated, getMetadata, isFetching, isPopulated, isInvalidated, getError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: PropsFromItem<PopulatedType, FullPopulatedType> & { state: ReducerNamespace.ReducerType } = {
+        const resultState: PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
             populated: isPopulated(state, queryString?.toString()),
             items: getPopulated(state, queryString?.toString()) as any,
             loading: isFetching(state, queryString?.toString()),
+            metadata: getMetadata(state, queryString?.toString()),
             invalidated: isInvalidated(state, queryString?.toString()),
             error: getError(state, queryString?.toString()),
         }
@@ -69,7 +72,7 @@ export function useGetPopulated<
 
 function useGetBasic<PopulatedType, FullPopulatedType, Metadata>(
     model: Model<any, PopulatedType, FullPopulatedType, any, {}, Metadata>,
-): InferableComponentEnhancerWithProps<PropsFromItem<PopulatedType, FullPopulatedType>, { queryString?: string | URLSearchParams }> {
+): InferableComponentEnhancerWithProps<PropsFromItem<PopulatedType, FullPopulatedType, Metadata>, { queryString?: string | URLSearchParams }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
             queryString?: string | URLSearchParams
@@ -84,14 +87,14 @@ function useGetBasic<PopulatedType, FullPopulatedType, Metadata>(
 function useGetExtended<PopulatedType, FullPopulatedType, Metadata, Name extends string>(
     model: Model<any, PopulatedType, FullPopulatedType, any, {}, Metadata>,
     name: Name
-): InferableComponentEnhancerWithProps<PropsFromItem<PopulatedType, FullPopulatedType, Name>, { queryString?: string | URLSearchParams }> {
+): InferableComponentEnhancerWithProps<PropsFromItem<PopulatedType, FullPopulatedType, Metadata, Name>, { queryString?: string | URLSearchParams }> {
     return (ReactComponent): any => {
         const ObjectRaising: React.FunctionComponent<GetProps<typeof ReactComponent> & {
             queryString?: string | URLSearchParams
         }
         > = (props) => {
             const { items, ...otherPropsOfResult } = useGetPopulated(model, props.queryString)
-            const result: PropsFromItem<PopulatedType, FullPopulatedType, Name> = <any>{
+            const result: PropsFromItem<PopulatedType, FullPopulatedType, Metadata, Name> = <any>{
                 ...otherPropsOfResult,
                 [name]: items,
 
@@ -110,7 +113,7 @@ export default function connectGet<
     Metadata
 >(
     model: Model<any, PopulatedType, FullPopulatedType, IdKey, any, Metadata>,
-): InferableComponentEnhancerWithProps<PropsFromItem<PopulatedType, FullPopulatedType>, { queryString?: string | URLSearchParams }>
+): InferableComponentEnhancerWithProps<PropsFromItem<PopulatedType, FullPopulatedType, Metadata>, { queryString?: string | URLSearchParams }>
 export default function connectGet<
     PopulatedType,
     FullPopulatedType,
@@ -120,7 +123,7 @@ export default function connectGet<
 >(
     mmodel: Model<any, PopulatedType, FullPopulatedType, IdKey, any, Metadata>,
     name: Name
-): InferableComponentEnhancerWithProps<PropsFromItem<PopulatedType, FullPopulatedType, Name>, { queryString?: string | URLSearchParams }>
+): InferableComponentEnhancerWithProps<PropsFromItem<PopulatedType, FullPopulatedType, Metadata, Name>, { queryString?: string | URLSearchParams }>
 export default function connectGet<Name extends string = 'items'>(
     model: any,
     name?: Name

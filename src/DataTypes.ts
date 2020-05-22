@@ -45,19 +45,19 @@ export default class Model<RealType,
         return connectModificators(this)
     }
 
-    public connectGet(): InferableComponentEnhancerWithProps<GetPropsFromItem<RealType>, { queryString?: string | URLSearchParams }>
+    public connectGet(): InferableComponentEnhancerWithProps<GetPropsFromItem<RealType, MetaData>, { queryString?: string | URLSearchParams }>
     public connectGet<Name extends string>(
         name: Name
-    ): InferableComponentEnhancerWithProps<GetPropsFromItem<RealType, Name>, { queryString?: string | URLSearchParams }>
+    ): InferableComponentEnhancerWithProps<GetPropsFromItem<RealType, MetaData, Name>, { queryString?: string | URLSearchParams }>
     public connectGet<Name extends string = 'items'>(
         name?: Name
     ) {
         return connectGet<RealType, IdKey, MetaData, Name>(this, name!)
     }
-    public connectGetPopulated(): InferableComponentEnhancerWithProps<GetPopulatedPropsFromItem<PopulatedType, FullPopulatedType>, { queryString?: string | URLSearchParams }>
+    public connectGetPopulated(): InferableComponentEnhancerWithProps<GetPopulatedPropsFromItem<PopulatedType, FullPopulatedType, MetaData>, { queryString?: string | URLSearchParams }>
     public connectGetPopulated<Name extends string>(
         name: Name
-    ): InferableComponentEnhancerWithProps<GetPopulatedPropsFromItem<PopulatedType, FullPopulatedType, Name>, { queryString?: string | URLSearchParams }>
+    ): InferableComponentEnhancerWithProps<GetPopulatedPropsFromItem<PopulatedType, FullPopulatedType, MetaData, Name>, { queryString?: string | URLSearchParams }>
     public connectGetPopulated<Name extends string = 'items'>(
         name?: Name
     ) {
