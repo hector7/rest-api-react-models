@@ -121,29 +121,6 @@ Fist clean mode using Typescript, using a hook:
 		}</ul>
 	}
 
-And the "connect" way as a redux container (Note that will be removed on future and it's deprecated):
-
-    import  React  from  'react'
-
-	import  bookModel, { BookType }  from  '../models/bookModel'
-	import  BookView  from  '../views/bookView'
-	import { HttpError } from  '@rest-api/redux'
-
-	class  BookContainer  extends  React.Component<{ 
-		error: HttpError | null, 
-		loading: boolean, 
-		items: BookType[] 
-	}>{
-		render() {
-			const { items, loading, error } = this.props
-			if (error) return  <p>There are an error with the request</p>
-			if (loading) return  <p>Loading...</p>
-			return  <ul>{
-				items.map(i  =>  <BookView  name={i.name}  />)
-			}</ul>
-		}
-	}
-	export default bookModel.connectGet()(BookContainer)
 
 ### Populate items
 You can populate items with a simple usage (you need to check if it's populated):
