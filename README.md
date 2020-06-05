@@ -11,7 +11,14 @@ Benefits:
 Caution: if you have some random typescript error (pex: ts2589) on creating or editing models, kill the process and restart npm start (on Visual Studio Code restart program).
 
 ## Major changes
-On model creation don't need to pass a model name. This major includes a refactor and some bug fixes and features.
+### From v1
+ - Upgraded typescript version and needs your proyect version >=3.9.3 (and react-scripts >= 3.4.1, if you don't eject your project)
+ - Required and idOnly don't need to import from library since upgraded typescript version
+ - A model on a schema represents the schema of model (for represent the primary key, needs to pass idOnly argument)
+ - Connect methods deleted (deprecated on v1)
+ - Added more flexibility on models generation adding methods ("getSubModelWithKey" and "getSearchSubModel") to models
+### From v0
+ - On model creation don't need to pass a model name. This major includes a refactor and some bug fixes and features.
 
 ## File structure
 This code examples follows this src structure:

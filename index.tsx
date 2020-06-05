@@ -7,7 +7,7 @@ export { default as Model } from './src/DataTypes'
 export * from '@rest-api/redux'
 import { ModelType as OriginalModelType, PopulatedModelType as OriginalPopulatedModelType, FullPopulatedModelType as OriginalFullPopulatedModelType } from '@rest-api/redux'
 const { required } = Types
-export { required }
+export { required, required as idOnly }
 const initialContext: any = null
 const Context = React.createContext<ReactReduxContextValue<any, any>>(initialContext)
 export function Schema<I extends SchemaTypes.Item>(schema: I) {
