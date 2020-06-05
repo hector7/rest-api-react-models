@@ -4,3 +4,7 @@ coverage
 *.js
 *.d.ts
 *.map
+!/config/*
+!/scripts/*
+!/config/**/*
+!/scripts/**/*

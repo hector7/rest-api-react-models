@@ -1,4 +1,4 @@
-import Book from './bookModel'
+import Book, { BookType } from './bookModel'
 import React from 'react';
 import { render } from '@testing-library/react';
 import { getProvider } from '../../..'
@@ -16,7 +16,7 @@ test('renders learn react link', () => {
         send() {
             switch (this.responseURL) {
                 case '/api/example':
-                    return this.respond(200, {}, JSON.stringify([{id: 1, name: 'book', library: 1}]))
+                    return this.respond(200, {}, JSON.stringify([{ id: 1, name: 'book', library: 1 }] as BookType[]))
             }
         }
     }

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prepublishOnly": "npm run build",
-    "prebuild": "find src -name \"*.d.ts\" -type f -delete && find src -name \"*.js\" -type f -delete && find src -name \"*.js.map\" -type f -delete",
+    "prebuild": "find . -not -path \"./node_modules*\" -name \"*.d.ts\" -type f -delete && find . -not -path \"./node_modules*\" -not -path \"./config*\" -not -path \"./scripts*\" -name \"*.js\" -type f -delete && find . -not -path \"./node_modules*\" -name \"*.js.map\" -type f -delete",
     "build": "tsc",
     "pretest": "npm run build",
     "test": "node scripts/test.js",
@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "@babel/core": "7.9.0",
-    "@rest-api/redux": "^2.0.0",
+    "@rest-api/redux": "^2.0.2",
     "@svgr/webpack": "4.3.3",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
@@ -122,7 +122,7 @@
       "<rootDir>/src"
     ],
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
+      "src/**/*.{ts,tsx}",
       "!src/**/*.d.ts"
     ],
     "setupFiles": [
@@ -130,8 +130,8 @@
     ],
     "setupFilesAfterEnv": [],
     "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
-      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
+      "<rootDir>/src/**/__tests__/**/*.{ts,tsx}",
+      "<rootDir>/src/**/*.{spec,test}.{ts,tsx}"
     ],
     "testEnvironment": "jest-environment-jsdom-fourteen",
     "transform": {
