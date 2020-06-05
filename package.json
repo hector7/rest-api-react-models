@@ -32,7 +32,7 @@
     "all": true
   },
   "author": "hector.rbs91@gmail.com",
-  "license": "ISC",
+  "license": "MIT",
   "homepage": "https://github.com/hector7/rest-api-react-models",
   "keywords": [
     "react-plugin",
