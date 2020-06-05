@@ -7,7 +7,7 @@ const bookSchema = Schema({
         required
     },
     name: String,
-    library: {type: libraryModel, required}
+    library: { type: libraryModel, required, idOnly: true }
 })
 export type BookType = ModelType<typeof bookSchema>
 export type BookPopulatedType = PopulatedModelType<typeof bookSchema>
