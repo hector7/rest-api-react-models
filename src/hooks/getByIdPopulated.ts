@@ -7,16 +7,14 @@ import { useDispatch, useSelector } from '../..'
 import BasicIdRestModel from '@rest-api/redux/src/restmodels/basic/BasicIdRestModel'
 import ComplexIdRestModel from '@rest-api/redux/src/restmodels/ComplexIdRestModel'
 
-export type PropsFromItem<PartialItem, PopulatedItem, Name extends string = 'item'> = {
+export type PropsFromItem<PartialItem, PopulatedItem> = {
     populated: true,
     invalidated: boolean;
     error: HttpError | null;
     loading: boolean;
-} & {
-        [k in Name]: PopulatedItem;
+    item: PopulatedItem;
     } | {
-        [k in Name]: PartialItem | null;
-    } & {
+        item: PartialItem | null;
         loading: boolean;
         populated: false,
         invalidated: boolean;

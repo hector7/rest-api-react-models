@@ -7,23 +7,22 @@ import { useDispatch, useSelector } from '../..'
 import BasicSearchRestModel from '@rest-api/redux/src/restmodels/basic/BasicSearchRestModel'
 import ComplexSearchRestModel from '@rest-api/redux/src/restmodels/ComplexSearchRestModel'
 
-export type PropsFromItem<PartialItem, PopulatedItem, MetaData, Name extends string = 'items'> = {
+export type PropsFromItem<PartialItem, PopulatedItem, MetaData> = {
     populated: true,
     invalidated: boolean;
     error: HttpError | null;
     loading: boolean;
     metadata: MetaData | null;
-} & {
-        [k in Name]: PopulatedItem[];
-    } | {
-        [k in Name]: PartialItem[];
-    } & {
-        loading: boolean;
-        populated: false,
-        invalidated: boolean;
-        error: HttpError | null;
-        metadata: MetaData | null;
-    }
+    items: PopulatedItem[];
+} |
+{
+    loading: boolean;
+    populated: false,
+    invalidated: boolean;
+    error: HttpError | null;
+    metadata: MetaData | null;
+    items: PartialItem[];
+}
 
 
 

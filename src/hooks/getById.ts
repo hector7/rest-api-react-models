@@ -7,9 +7,8 @@ import { useDispatch, useSelector } from '../..'
 import BasicIdRestModel from '@rest-api/redux/src/restmodels/basic/BasicIdRestModel'
 import ComplexIdRestModel from '@rest-api/redux/src/restmodels/ComplexIdRestModel'
 
-export type PropsFromItem<Item, Name extends string = 'item'> = {
-    [k in Name]: Item | null;
-} & {
+export type PropsFromItem<Item> = {
+    item: Item | null;
     loading: boolean;
     invalidated: boolean;
     error: HttpError | null;

@@ -7,9 +7,8 @@ import { useDispatch, useSelector } from '../..'
 import BasicSearchRestModel from '@rest-api/redux/src/restmodels/basic/BasicSearchRestModel'
 import ComplexSearchRestModel from '@rest-api/redux/src/restmodels/ComplexSearchRestModel'
 
-export type PropsFromItem<Item, MetaData, Name extends string = 'items'> = {
-    [k in Name]: NonNullable<Item>[];
-} & {
+export type PropsFromItem<Item, MetaData> = {
+    items: NonNullable<Item>[];
     loading: boolean;
     invalidated: boolean;
     error: HttpError | null;

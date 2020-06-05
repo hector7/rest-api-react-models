@@ -1,20 +1,37 @@
 import React from 'react'
 
 import bookModel from '../models/bookModel'
-import BookView from '../views/bookView'
-import { HttpError } from '@rest-api/redux'
 
-const bookContainer: React.FC<{}> = () => {
-    const { items } = bookModel.useGet()
-    const { loading, error, ...r } = bookModel.useGetPopulated()
-    const { item } = bookModel.useGetById(1)
-    const { ...result } = bookModel.useGetByIdPopulated(1)
+export default () => {
+    const { loading, error, ...result } = bookModel.useGetPopulated()
+
     if (error) return <p>There are an error with the request</p>
     if (loading) return <p>Loading...</p>
-    return <ul>
-        {items.map(i => <BookView name={i.name} />)}
-        {r.populated ? r.items.map(i => <BookView name={i.library.name} />) : null}
-        {< li > Item: {item!.name}</li>}
-        {result.item && <li>Item populated: {result.item.library.name}</li>}
-    </ul>
+    return <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Library name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {
+                result.populated &&
+                result.items.map(i => <React.Fragment key={i.id}>
+                    <td>{i.id}</td>
+                    <td>{i.name}</td>
+                    <td>{i.library.name}</td>
+                </React.Fragment>)
+            }
+            {
+                result.populated === false && //here the placeholder of item while loading
+                result.items.map(i => <React.Fragment key={i.id}>
+                    <td>{i.id}</td>
+                    <td>{i.name}</td>
+                    <td>{i.library.name ? i.library.name : 'Loading ...'}</td>
+                </React.Fragment>)
+            }
+        </tbody>
+    </table>
 }

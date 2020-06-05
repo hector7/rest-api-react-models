@@ -54,7 +54,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "source-map-support": "^0.5.16",
-    "typescript": "^3.9.3",
+    "typescript": "^3.9.5",
     "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
