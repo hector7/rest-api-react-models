@@ -41,30 +41,28 @@ First of all you need to insert on your index.tsx the provider from application.
     ...
     import { getProvider } from  '@rest-api/react-models';
 	
-	const ReactModelsProvider = getProvider();
+    const ReactModelsProvider = getProvider();
 
 
-	ReactDOM.render(<ReactModelsProvider>
-			<App />
-		</ReactModelsProvider>, document.getElementById('root'));
+    ReactDOM.render(<ReactModelsProvider>
+        <App />
+    </ReactModelsProvider>, document.getElementById('root'));
 
 ## Declaring models
 Declare the models of your application, given a Schema, an id (need to be required field) and a base url:
 
-    import  React  from  'react'
-    
-    import { Model, Schema, required } from  '@rest-api/react-models'
+    import { Model, Schema } from  '@rest-api/react-models'
     
     const librarySchema = Schema({
         id: {
-    	    type: Number,
-    	    required
+            type: Number,
+            required: true
         },
         name: String
     })
     export  default  new  Model(librarySchema, 
-	    'id', 
-	    '/api/library')
+        'id', 
+        '/api/library')
 
    
 You can use complex objects on a Schema simplier creating subschemas:
@@ -72,33 +70,107 @@ You can use complex objects on a Schema simplier creating subschemas:
     import { Schema } from  '@rest-api/react-models'
     
     const testSchema = Schema({
-	    subSchema: Schema({
-	    	id: { type: String },
-	    	name: String
-    	})
-	})
+        subSchema: Schema({
+            id: { type: String },
+            name: String
+        })
+    })
+    
+For a model with metadata, you can represent with following arguments (declaring the data that endpoint sends):
+
+    import { Model, Schema } from  '@rest-api/react-models'
+    
+    const librarySchema = Schema({
+        id: {
+            type: Number,
+            required: true
+        },
+        name: String
+    })
+    export  default  new  Model(librarySchema, 
+        'id', 
+        '/api/library',
+	Schema({
+	    count: {
+	        type: Number,
+		required: true
+	    },
+	    items: [{
+	        type: librarySchema,
+		required: true
+	    }]
+	},
+	data => data.items,
+	({items, ...metadata}) => metadata,
+	{} //here optional opts (trailingSlash and headers)
+    )
+    	
 And foreign keys of your model can be representated:
 
-    import { ModelType, ModelPopulatedType, Schema, Model, required } from  '@rest-api/react-models'
+    import { ModelType, ModelPopulatedType, Schema, Model } from  '@rest-api/react-models'
     import libraryModel from './libraryModel'
     
     const bookSchema = Schema({
-	    id: { type: Number, required },
-	    name: { type: String, required },
-	    description: String,
-	    library: {
-		    type: libraryModel,
-		    required
-	    }
+        id: { type: Number, required: true },
+        name: { type: String, required: true },
+        description: String,
+        library: {
+            type: libraryModel,
+            required: true
+        }
     })
     export type BookType = ModelType<typeof bookSchema>
-	export type BookPopulatedType = ModelPopulatedType<typeof bookSchema>
-	export default new Model(bookSchema, 'id', '/api/book')
+    export type BookPopulatedType = ModelPopulatedType<typeof bookSchema>
+    export default new Model(bookSchema, 'id', '/api/book')
 
 An option can be passed to model declaration in order to works with django "trailing slash" or pass custom headers:
 
-	new Model(bookSchema, 'id', '/api/book', { trailingSlash: true, headers: { Authorization: "Basic xxxx" } })
+    new Model(bookSchema, 'id', '/api/book', { trailingSlash: true, headers: { Authorization: "Basic xxxx" } })
 
+### New methods of model
+If you has an endpoint on a different url that represents same object, now you can use your declared model
+
+#### getSubModelWithKey method
+In order to get an object by a key (not an id, but is unique) this is your method
+Simple usage:
+
+    import bookModel from './bookModel'
+    export default bookModel.getSubModelWithKey('name', '/api/book/name') 
+    
+    //url is optional, if not provided will be used url from bookModel
+
+Full control on your url:
+
+    import bookModel from './bookModel'
+    import { Schema } from '@rest-api/react-models'
+    const optSchema = Schema({ 
+        project: { 
+            type: Number, 
+            required: true 
+        }
+    })
+    export default bookModel.getSubModelWithKey(optSchema, 'name', ({project}) => `/api/book/${project}/name`)
+
+#### getSearchSubModel method
+This method is in order to work as "useGet" or "useGetPopulated", but in other url
+
+Simple usage:
+
+    import bookModel from './bookModel'
+    export default bookModel.getSearchSubModel('api/book/hector') 
+
+
+Full control on your url:
+
+    import bookModel from './bookModel'
+    import { Schema } from '@rest-api/react-models'
+    const optSchema = Schema({ 
+        author: { 
+            type: String,
+            required: true 
+        }
+    })
+    export default bookModel.getSearchSubModel(optSchema, ({author}) => `/api/book/${author}`)
 
 ## Using on the container
 ### Simple usage
@@ -123,52 +195,45 @@ Fist clean mode using Typescript, using a hook:
 
 
 ### Populate items
-You can populate items with a simple usage (you need to check if it's populated):
+This feature populate foreign key if these ones aren't fetched. 
+It's recommended to fetch beore this call the objects using useGet (pex: on Apps initialization). The ajax method will be called only on necessary (if there are some object not fetched).
+
+You can populate items with a simple usage (you need to check if it's populated, if you want to use a placeholder):
 
 	import React from 'react'
 
-	import bookModel from '../models/bookmodel'
-	
-	export default () => {
-		const {loading, error, ...result} = bookModel.useGetPopulated()
+	import bookModel from '../models/bookModel'
 
-		if (error) return  <p>There are an error with the request</p>
-		if (loading) return  <p>Loading...</p>
-		if(result.populated)
-			return  <table>
-				<thead>
-					<tr>
-						<th>Id</th>
-						<th>Name</th>
-						<th>Library name</th>
-					</tr>
-				</thead>
-				<tbody>
-				{
-					result.items.map(i  =>  <React.Fragment key={i.id}>
-						<td>{i.id}</td>
-						<td>{i.name}</td>
-						<td>{i.library.name}</td>
-					</React.Fragment>
-				}
-				</tbody>
-			</table>
-		return  <table>
-			<thead>
-				<tr>
-					<th>Id</th>
-					<th>Name</th>
-					<th>Library name</th>
-				</tr>
-			</thead>
-			<tbody>
-			{
-				result.items.map(i  =>  <React.Fragment key={i.id}>
-					<td>{i.id}</td>
-					<td>{i.name}</td>
-					<td>{i.library.name ? i.library.name : Loading ...}</td>
-				</React.Fragment>
-			}
-			</tbody>
-		</table>
+	export default () => {
+	    const { loading, error, ...result } = bookModel.useGetPopulated()
+
+	    if (error) return <p>There are an error with the request</p>
+	    if (loading) return <p>Loading...</p>
+	    return <table>
+		<thead>
+		    <tr>
+			<th>Id</th>
+			<th>Name</th>
+			<th>Library name</th>
+		    </tr>
+		</thead>
+		<tbody>
+		    {
+			result.populated &&
+			result.items.map(i => <React.Fragment key={i.id}>
+			    <td>{i.id}</td>
+			    <td>{i.name}</td>
+			    <td>{i.library.name}</td>
+			</React.Fragment>)
+		    }
+		    {
+			result.populated === false && //here the placeholder of item while loading
+			result.items.map(i => <React.Fragment key={i.id}>
+			    <td>{i.id}</td>
+			    <td>{i.name}</td>
+			    <td>{i.library.name ? i.library.name : 'Loading ...'}</td>
+			</React.Fragment>)
+		    }
+		</tbody>
+	    </table>
 	}
