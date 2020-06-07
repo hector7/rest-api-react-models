@@ -2,4 +2,6 @@
 !*.d.ts
 /test
 /coverage
+/scripts
+/config
 /.nyc_output

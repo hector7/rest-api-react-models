@@ -51,15 +51,10 @@
     "@types/node": "^12.12.7",
     "@types/react-redux": "^7.1.9",
     "fake-xml-http-request": "^2.0.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "source-map-support": "^0.5.16",
     "typescript": "^3.9.5",
-    "xmlhttprequest": "^1.8.0"
-  },
-  "dependencies": {
+    "xmlhttprequest": "^1.8.0",
     "@babel/core": "7.9.0",
-    "@rest-api/redux": "^2.0.2",
     "@svgr/webpack": "4.3.3",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
@@ -99,7 +94,6 @@
     "postcss-safe-parser": "4.0.1",
     "react-app-polyfill": "^1.0.6",
     "react-dev-utils": "^10.2.1",
-    "react-redux": "^7.2.0",
     "resolve": "1.15.0",
     "resolve-url-loader": "3.1.1",
     "sass-loader": "8.0.2",
@@ -113,8 +107,16 @@
     "webpack-manifest-plugin": "2.2.0",
     "workbox-webpack-plugin": "4.3.1"
   },
+  "dependencies": {
+    "@rest-api/redux": "^2.0.2",
+    "react-redux": "^7.2.0"
+  },
+  "optionalDependencies": {
+    "react-scripts": "^3.4.1"
+  },
   "peerDependencies": {
-    "react-scripts": "^3.4.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "typescript": "^3.9.3"
   },
   "jest": {

@@ -116,7 +116,8 @@ And foreign keys of your model can be representated:
         description: String,
         library: {
             type: libraryModel,
-            required: true
+            required: true,
+            idOnly: true
         }
     })
     export type BookType = ModelType<typeof bookSchema>
