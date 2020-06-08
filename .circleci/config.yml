@@ -1,0 +1,39 @@
+version: 2.1
+orbs:
+  node: circleci/node@8.9.1
+jobs:
+  build-and-test:
+    working_directory: ~/repo
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: npm install
+            - run: npm test
+  deploy:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:8.9.1
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: Publish package
+          command: npm publish
+workflows:
+    build-and-test:
+      jobs:
+        - build-and-test
+        - deploy:
+            requires:
+              - test
+            filters:
+              tags:
+                only: /^v.*/
+              branches:
+                ignore: /.*/
