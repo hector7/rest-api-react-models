@@ -10,9 +10,15 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
-            - run: ./node_modules/.bin/jest --collectCoverage=true
+            - run: 
+              name: Run tests with JUnit as reporter
+              command: ./node_modules/.bin/jest --ci --runInBand --reporters=default --reporters=jest-junit --coverage
+              environment:
+                JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+            - store_test_results:
+                path: ./reports/junit/
             - store_artifacts:
-                path: coverage
+                path: coverage/lcov-report
   deploy:
     working_directory: .
     docker:
