@@ -1,7 +1,7 @@
 ## @rest-api/react-models
+[![npm version](https://img.shields.io/npm/v/@rest-api/react-models)](https://www.npmjs.com/package/@rest-api/react-models)
 [![CircleCI](https://circleci.com/gh/hector7/rest-api-react-models.svg?style=shield)](https://circleci.com/gh/hector7/rest-api-react-models)
 [![codecov](https://codecov.io/gh/hector7/rest-api-react-models/branch/master/graph/badge.svg)](https://codecov.io/gh/hector7/rest-api-react-models)
-[![npm version](https://img.shields.io/npm/v/@rest-api/react-models)](https://www.npmjs.com/package/@rest-api/react-models)
 
 
 Make your React project easier to maintain with this package.
