@@ -18,7 +18,10 @@ jobs:
             - store_test_results:
                 path: ./reports/junit/
             - store_artifacts:
-                path: ./coverage/lcov-report
+                path: ./reports/junit/
+            - run:
+                name: Publish coverage in codecov
+                command: ./node_modules/.bin/codecov ./coverage/coverage.json
   deploy:
     working_directory: .
     docker:

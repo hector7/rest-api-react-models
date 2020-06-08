@@ -1,5 +1,5 @@
 ## @rest-api/react-models
-
+[![CircleCI](https://circleci.com/gh/hector7/rest-api-react-models.svg?style=svg)](https://circleci.com/gh/hector7/rest-api-react-models)
 Make your React project easier to maintain with this package.
 
 Benefits:
