@@ -11,12 +11,14 @@ function LibraryComponentGet() {
     </React.Fragment>
 }
 
-test('renders learn react link', () => {
+test('renders learn react link', (d) => {
     global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
         send() {
             switch (this.responseURL) {
                 case '/api/example':
-                    return this.respond(200, {}, JSON.stringify([{ id: 1, name: 'book', library: 1 }] as BookType[]))
+                    setTimeout(()=>{
+                    this.respond(200, {}, JSON.stringify([{ id: 1, name: 'book', library: 1 }] as BookType[]))
+                    }, 40)
             }
         }
     }
@@ -24,5 +26,8 @@ test('renders learn react link', () => {
     const { getByText } = render(<Provider>
         <LibraryComponentGet />
     </Provider>);
-    const linkElement = getByText(/book/i);
+    setTimeout(()=>{
+        const linkElement = getByText(/book/i);
+        d()
+    }, 60)
 });

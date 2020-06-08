@@ -4,12 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prepublishOnly": "npm run build",
-    "prebuild": "find . -not -path \"./node_modules*\" -name \"*.d.ts\" -type f -delete && find . -not -path \"./node_modules*\" -not -path \"./config*\" -not -path \"./scripts*\" -name \"*.js\" -type f -delete && find . -not -path \"./node_modules*\" -name \"*.js.map\" -type f -delete",
-    "build": "tsc",
+    "prepublishOnly": "npm run clear && tsc",
+    "clear": "find . -not -path \"./node_modules*\" -name \"*.d.ts\" -type f -delete && find . -not -path \"./node_modules*\" -not -path \"./config*\" -not -path \"./scripts*\" -name \"*.js\" -type f -delete && find . -not -path \"./node_modules*\" -name \"*.js.map\" -type f -delete",
+    "pretest": "npm run clear",
     "test": "node scripts/test.js",
-    "watch": "mocha-typescript-watch",
-    "prepare": "npm run build"
+    "watch": "mocha-typescript-watch"
   },
   "repository": {
     "type": "git",
@@ -129,7 +128,9 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
-      "!src/**/*.d.ts"
+      "*.tsx",
+      "!src/**/*.d.ts",
+      "!src/test/**/*"
     ],
     "setupFiles": [
       "react-app-polyfill/jsdom"
