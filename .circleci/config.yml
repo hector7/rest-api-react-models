@@ -12,6 +12,9 @@ jobs:
           steps:
             - run: npm install
             - run: npm test
+            - run: jest --collectCoverage=true
+            - store_artifacts:
+              path: ~/repo/coverage
   deploy:
     working_directory: ~/repo
     docker:
