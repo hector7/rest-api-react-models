@@ -3,7 +3,6 @@ orbs:
   node: circleci/node@1.1.6
 jobs:
   build-and-test:
-    working_directory: ~/repo
     executor:
       name: node/default
     steps:
@@ -11,19 +10,19 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
-            - run: ~/node_modules/.bin/jest --collectCoverage=true
+            - run: ./node_modules/.bin/jest --collectCoverage=true
             - store_artifacts:
-                path: ~/repo/coverage
+                path: coverage
   deploy:
-    working_directory: ~/repo
+    working_directory: .
     docker:
       - image: circleci/node:8.9.1
     steps:
       - attach_workspace:
-          at: ~/repo
+          at: .
       - run:
           name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ./.npmrc
       - run:
           name: Publish package
           command: npm publish
