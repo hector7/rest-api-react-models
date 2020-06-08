@@ -11,7 +11,7 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
-            - run: jest --collectCoverage=true
+            - run: ~/node_modules/.bin/jest --collectCoverage=true
             - store_artifacts:
                 path: ~/repo/coverage
   deploy:
