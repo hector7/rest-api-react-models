@@ -11,7 +11,7 @@ function LibraryComponentGet() {
     </React.Fragment>
 }
 
-test('renders learn react link', () => {
+test('simple useGet', () => {
     global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
         send() {
             switch (this.responseURL) {
