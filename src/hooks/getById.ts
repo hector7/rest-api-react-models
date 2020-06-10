@@ -20,25 +20,23 @@ export default function useGetById<RealType,
         model: Model<RealType, any, any, IdKey, any, any> | BasicIdRestModel<RealType, any, any, IdKey>,
         id: RealType[IdKey]
     ): PropsFromItem<RealType> {
-    const { fetchByIdIfNeeded } = model.actions
     type Result = PropsFromItem<RealType>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
-    const { getById, isIdFetching, isIdInvalidated, getIdError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<RealType> = {
-            item: getById(state, id),
-            loading: isIdFetching(state, id),
-            invalidated: isIdInvalidated(state, id),
-            error: getIdError(state, id),
+            item: model.utils.getById(state, id),
+            loading: model.utils.isIdFetching(state, id),
+            invalidated: model.utils.isIdInvalidated(state, id),
+            error: model.utils.getIdError(state, id),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(fetchByIdIfNeeded(id))
+        dispatch(model.actions.fetchByIdIfNeeded(id))
         if (!shallowEqual(state, result)) setResult(state)
     })
-    return state
+    return result
 }
 
 export function useGetByIdExtended<
@@ -49,23 +47,21 @@ export function useGetByIdExtended<
         opts: Opts,
         id: RealType[IdKey]
     ): PropsFromItem<RealType> {
-    const { fetchByIdIfNeeded } = model.actions
     type Result = PropsFromItem<RealType>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
-    const { getById, isIdFetching, isIdInvalidated, getIdError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<RealType> = {
-            item: getById(state, opts, id),
-            loading: isIdFetching(state, opts, id),
-            invalidated: isIdInvalidated(state, opts, id),
-            error: getIdError(state, opts, id),
+            item: model.utils.getById(state, opts, id),
+            loading: model.utils.isIdFetching(state, opts, id),
+            invalidated: model.utils.isIdInvalidated(state, opts, id),
+            error: model.utils.getIdError(state, opts, id),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(fetchByIdIfNeeded(opts, id))
+        dispatch(model.actions.fetchByIdIfNeeded(opts, id))
         if (!shallowEqual(state, result)) setResult(state)
     })
-    return state
+    return result
 }

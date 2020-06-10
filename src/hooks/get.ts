@@ -25,24 +25,22 @@ export default function useGet<
     model: Model<RealType, any, any, IdKey, any, Metadata> | BasicSearchRestModel<RealType, any, any, IdKey, any, Metadata>,
     queryString?: string | URLSearchParams
 ): PropsFromItem<RealType, Metadata> {
-    const { fetchIfNeeded } = model.actions
     type Result = PropsFromItem<RealType, Metadata> & { state: ReducerNamespace.ReducerType }
     const [result, setResult] = React.useState<Result>({ error: null, metadata: null, invalidated: true, loading: false, items: [], state: <any>{} })
-    const { get, getMetadata, isFetching, isInvalidated, getError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<RealType, Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
-            items: get(state, queryString?.toString()),
-            metadata: getMetadata(state, queryString?.toString()),
-            loading: isFetching(state, queryString?.toString()),
-            invalidated: isInvalidated(state, queryString?.toString()),
-            error: getError(state, queryString?.toString()),
+            items: model.utils.get(state, queryString?.toString()),
+            metadata: model.utils.getMetadata(state, queryString?.toString()),
+            loading: model.utils.isFetching(state, queryString?.toString()),
+            invalidated: model.utils.isInvalidated(state, queryString?.toString()),
+            error: model.utils.getError(state, queryString?.toString()),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(fetchIfNeeded(queryString?.toString()))
+        dispatch(model.actions.fetchIfNeeded(queryString?.toString()))
         const { items: currentItems, ...currentState } = state
         const { items: prevItems, ...prevState } = result
         if (!shallowEqual(prevState, currentState)) setResult(state)
@@ -65,24 +63,22 @@ export function useGetExtended<
     opts: Opts,
     queryString?: string | URLSearchParams
 ): PropsFromItem<RealType, Metadata> {
-    const { fetchIfNeeded } = model.actions
     type Result = PropsFromItem<RealType, Metadata> & { state: ReducerNamespace.ReducerType }
     const [result, setResult] = React.useState<Result>({ error: null, metadata: null, invalidated: true, loading: false, items: [], state: <any>{} })
-    const { get, getMetadata, isFetching, isInvalidated, getError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<RealType, Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
-            items: get(opts, state, queryString?.toString()),
-            metadata: getMetadata(opts, state, queryString?.toString()),
-            loading: isFetching(opts, state, queryString?.toString()),
-            invalidated: isInvalidated(opts, state, queryString?.toString()),
-            error: getError(opts, state, queryString?.toString()),
+            items: model.utils.get(opts, state, queryString?.toString()),
+            metadata: model.utils.getMetadata(opts, state, queryString?.toString()),
+            loading: model.utils.isFetching(opts, state, queryString?.toString()),
+            invalidated: model.utils.isInvalidated(opts, state, queryString?.toString()),
+            error: model.utils.getError(opts, state, queryString?.toString()),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(fetchIfNeeded(opts, queryString?.toString()))
+        dispatch(model.actions.fetchIfNeeded(opts, queryString?.toString()))
         const { items: currentItems, ...currentState } = state
         const { items: prevItems, ...prevState } = result
         if (!shallowEqual(prevState, currentState)) setResult(state)

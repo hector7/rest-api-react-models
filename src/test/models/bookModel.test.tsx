@@ -91,9 +91,7 @@ test('useGetPopulated works', (d) => {
 test('useGetPopulatedById works', (d) => {
     function LibraryComponentGetByIdPopulated() {
         const result = Book.useGetByIdPopulated(1)
-        return <React.Fragment>
-            <p>{result.item?.library.name}</p>
-        </React.Fragment>
+        return <p>{result.item?.library.name}</p>
     }
     global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
         send() {
@@ -113,7 +111,6 @@ test('useGetPopulatedById works', (d) => {
     const { getByText } = render(<Provider>
         <LibraryComponentGetByIdPopulated />
     </Provider>);
-    d('not works as maximum update ... all is called but raises an error.')
     setTimeout(() => {
         const linkElement = getByText(/book/i);
         d()

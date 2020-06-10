@@ -35,25 +35,23 @@ export default function useGetPopulated<
         model: Model<RealType, PopulatedType, FullPopulatedType, IdKey, any, Metadata> | BasicSearchRestModel<RealType, PopulatedType, FullPopulatedType, IdKey, any, Metadata>,
         queryString?: string | URLSearchParams
     ): PropsFromItem<PopulatedType, FullPopulatedType, Metadata> {
-    const { fetchPopulatedIfNeeded } = model.actions
     type Result = PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType }
     const [result, setResult] = React.useState<Result>({ error: null, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: <any>{} })
-    const { getPopulated, getMetadata, isFetching, isPopulated, isInvalidated, getError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
-            populated: isPopulated(state, queryString?.toString()),
-            items: getPopulated(state, queryString?.toString()) as any,
-            loading: isFetching(state, queryString?.toString()),
-            metadata: getMetadata(state, queryString?.toString()),
-            invalidated: isInvalidated(state, queryString?.toString()),
-            error: getError(state, queryString?.toString()),
+            populated: model.utils.isPopulated(state, queryString?.toString()),
+            items: model.utils.getPopulated(state, queryString?.toString()) as any,
+            loading: model.utils.isFetching(state, queryString?.toString()),
+            metadata: model.utils.getMetadata(state, queryString?.toString()),
+            invalidated: model.utils.isInvalidated(state, queryString?.toString()),
+            error: model.utils.getError(state, queryString?.toString()),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(fetchPopulatedIfNeeded(queryString?.toString()))
+        dispatch(model.actions.fetchPopulatedIfNeeded(queryString?.toString()))
         const { items: currentItems, ...currentState } = state
         const { items: prevItems, ...prevState } = result
         if (!shallowEqual(prevState, currentState)) setResult(state)
@@ -82,25 +80,23 @@ export function useGetPopulatedExtended<
         opts: Opts,
         queryString?: string | URLSearchParams
     ): PropsFromItem<PopulatedType, FullPopulatedType, Metadata> {
-    const { fetchPopulatedIfNeeded } = model.actions
     type Result = PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType }
     const [result, setResult] = React.useState<Result>({ error: null, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: <any>{} })
-    const { getPopulated, getMetadata, isFetching, isPopulated, isInvalidated, getError } = model.utils
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
-            populated: isPopulated(opts, state, queryString?.toString()),
-            items: getPopulated(opts, state, queryString?.toString()) as any,
-            loading: isFetching(opts, state, queryString?.toString()),
-            metadata: getMetadata(opts, state, queryString?.toString()),
-            invalidated: isInvalidated(opts, state, queryString?.toString()),
-            error: getError(opts, state, queryString?.toString()),
+            populated: model.utils.isPopulated(opts, state, queryString?.toString()),
+            items: model.utils.getPopulated(opts, state, queryString?.toString()) as any,
+            loading: model.utils.isFetching(opts, state, queryString?.toString()),
+            metadata: model.utils.getMetadata(opts, state, queryString?.toString()),
+            invalidated: model.utils.isInvalidated(opts, state, queryString?.toString()),
+            error: model.utils.getError(opts, state, queryString?.toString()),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(fetchPopulatedIfNeeded(opts, queryString?.toString()))
+        dispatch(model.actions.fetchPopulatedIfNeeded(opts, queryString?.toString()))
         const { items: currentItems, ...currentState } = state
         const { items: prevItems, ...prevState } = result
         if (!shallowEqual(prevState, currentState)) setResult(state)

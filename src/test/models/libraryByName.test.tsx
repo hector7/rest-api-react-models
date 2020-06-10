@@ -17,7 +17,7 @@ describe('getSubModelWithKey', () => {
         global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
             send() {
                 switch (this.responseURL) {
-                    case '/api/example/pepita/':
+                    case '/api/library/pepita/':
                         setTimeout(() => {
                             this.respond(200, {}, JSON.stringify({ id: 1, name: 'pepita' } as LibraryType))
                         }, 40)
@@ -31,7 +31,7 @@ describe('getSubModelWithKey', () => {
         setTimeout(() => {
             const linkElement = getByText(/pepita/i);
             d()
-        }, 60)
+        }, 80)
     });
 
     test('useGetPopulatedById works', (d) => {
@@ -46,7 +46,7 @@ describe('getSubModelWithKey', () => {
                 switch (this.responseURL) {
                     case '/api/library/pepita/':
                         return setTimeout(() => {
-                            this.respond(200, {}, JSON.stringify({ id: 1, name: 'book' } as LibraryType))
+                            this.respond(200, {}, JSON.stringify({ id: 1, name: 'pepita' } as LibraryType))
                         }, 10)
                 }
             }
@@ -55,10 +55,9 @@ describe('getSubModelWithKey', () => {
         const { getByText } = render(<Provider>
             <LibraryComponentGetByIdPopulated />
         </Provider>);
-        d('not works as maximum update ... all is called but raises an error.')
         setTimeout(() => {
-            const linkElement = getByText(/book/i);
+            const linkElement = getByText(/pepita/i);
             d()
-        }, 60)
+        }, 80)
     });
 })
