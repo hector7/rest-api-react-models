@@ -224,15 +224,12 @@ You can populate items with a simple usage (you need to check if it's populated,
 		</thead>
 		<tbody>
 		    {
-			result.populated &&
+			result.populated ?
 			result.items.map(i => <React.Fragment key={i.id}>
 			    <td>{i.id}</td>
 			    <td>{i.name}</td>
 			    <td>{i.library.name}</td>
-			</React.Fragment>)
-		    }
-		    {
-			result.populated === false && //here the placeholder of item while loading
+			</React.Fragment>) :
 			result.items.map(i => <React.Fragment key={i.id}>
 			    <td>{i.id}</td>
 			    <td>{i.name}</td>

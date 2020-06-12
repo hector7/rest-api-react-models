@@ -5,7 +5,6 @@ import Model, { Schema as SchemaClass } from './src/DataTypes'
 import { SchemaTypes } from '@rest-api/redux/src/Schema'
 export { default as Model } from './src/DataTypes'
 export * from '@rest-api/redux'
-import { ModelType as OriginalModelType, PopulatedModelType as OriginalPopulatedModelType, FullPopulatedModelType as OriginalFullPopulatedModelType } from '@rest-api/redux'
 const { required } = Types
 export { required, required as idOnly }
 const initialContext: any = null
@@ -18,19 +17,19 @@ export const useDispatch = createDispatchHook(Context)
 
 export type ModelType<M extends Model<any, any, any, any, any, any> | SchemaClass<any, any, any>> =
     M extends Model<infer T, any, any, any, any, any> ? T :
-    M extends SchemaClass<infer T, any, any> ? T : OriginalModelType<M>
+    M extends SchemaClass<infer T, any, any> ? T : never
 export type PopulatedModelType<M extends Model<any, any, any, any, any, any> | SchemaClass<any, any, any>> =
     M extends Model<any, infer T, any, any, any, any> ? T :
-    M extends SchemaClass<any, infer T, any> ? T : OriginalPopulatedModelType<M>
+    M extends SchemaClass<any, infer T, any> ? T : never
 export type FullPopulatedModelType<M extends Model<any, any, any, any, any, any> | SchemaClass<any, any, any>> =
     M extends Model<any, any, infer T, any, any, any> ? T :
-    M extends SchemaClass<any, any, infer T> ? T : OriginalFullPopulatedModelType<M>
+    M extends SchemaClass<any, any, infer T> ? T : never
 export type RealType<M extends Model<any, any, any, any, any, any> | SchemaClass<any, any, any>> =
     M extends Model<any, infer T, any, any, any, any> ? T :
-    M extends SchemaClass<infer T, any, any> ? T : OriginalModelType<M>
+    M extends SchemaClass<infer T, any, any> ? T : never
 export type PopulatedType<M extends Model<any, any, any, any, any, any> | SchemaClass<any, any, any>> =
     M extends Model<any, infer T, any, any, any, any> ? T :
-    M extends SchemaClass<any, infer T, any> ? T : OriginalPopulatedModelType<M>
+    M extends SchemaClass<any, infer T, any> ? T : never
 
 
 export function getProvider() {

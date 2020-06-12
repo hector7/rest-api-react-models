@@ -1,5 +1,5 @@
 import { Redux as SchemaNamespace } from '@rest-api/redux/src/Schema'
-import OriginalComplexIdRestModel from '@rest-api/redux/src/restmodels/ComplexIdRestModel'
+import { ComplexIdRestModel as OriginalComplexIdRestModel } from '@rest-api/redux/src/restmodels/ComplexIdRestModel'
 import { useGetByIdExtended } from '../hooks/getById'
 import { useGetByIdPopulatedExtended } from '../hooks/getByIdPopulated'
 

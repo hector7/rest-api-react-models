@@ -1,5 +1,5 @@
 import { Redux as SchemaNamespace } from '@rest-api/redux/src/Schema'
-import OriginalBasicSearchRestModel from '@rest-api/redux/src/restmodels/basic/BasicSearchRestModel'
+import { BasicSearchRestModel as OriginalBasicSearchRestModel } from '@rest-api/redux/src/restmodels/basic/BasicSearchRestModel'
 import useGet from '../hooks/get'
 import useGetPopulated from '../hooks/getPopulated'
 

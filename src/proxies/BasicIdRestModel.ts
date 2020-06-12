@@ -1,5 +1,5 @@
 import { Redux as SchemaNamespace } from '@rest-api/redux/src/Schema'
-import OriginalBasicIdRestModel from '@rest-api/redux/src/restmodels/basic/BasicIdRestModel'
+import { BasicIdRestModel as OriginalBasicIdRestModel } from '@rest-api/redux/src/restmodels/basic/BasicIdRestModel'
 import useGetById from '../hooks/getById'
 import useGetByIdPopulated from '../hooks/getByIdPopulated'
 

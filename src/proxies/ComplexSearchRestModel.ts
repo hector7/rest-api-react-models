@@ -1,5 +1,5 @@
 import { Redux as SchemaNamespace } from '@rest-api/redux/src/Schema'
-import OriginalComplexSearchRestModel from '@rest-api/redux/src/restmodels/ComplexSearchRestModel'
+import { ComplexSearchRestModel as OriginalComplexSearchRestModel } from '@rest-api/redux/src/restmodels/ComplexSearchRestModel'
 import { useGetExtended } from '../hooks/get'
 import { useGetPopulatedExtended } from '../hooks/getPopulated'
 

@@ -1,5 +1,4 @@
 import { Redux as SchemaNamespace } from '@rest-api/redux/src/Schema'
-import { Model as OriginalModel } from '@rest-api/redux'
 import BasicIdRestModel from './BasicIdRestModel'
 import Schema from './Schema'
 import ComplexIdRestModel from './ComplexIdRestModel'
@@ -10,13 +9,16 @@ import useGetPopulated from '../hooks/getPopulated'
 import useModificators from '../hooks/modificators'
 import useGetById from '../hooks/getById'
 import useGetByIdPopulated from '../hooks/getByIdPopulated'
+import { BasicRestModel } from '@rest-api/redux/src/restmodels/basic/BasicRestModel'
+import { SuspenseProps } from 'react'
 
 export default class Model<RealType,
     PopulatedType,
     FullPopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     GetItem,
-    MetaData> extends OriginalModel<RealType, PopulatedType, FullPopulatedType, IdKey, GetItem, MetaData> {
+    MetaData> 
+    extends BasicRestModel<RealType, PopulatedType, FullPopulatedType, IdKey, GetItem, MetaData> {
 
     public useGet(queryString?: string | URLSearchParams) {
         return useGet(this, queryString)

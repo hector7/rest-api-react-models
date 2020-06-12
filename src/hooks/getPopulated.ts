@@ -1,11 +1,12 @@
 import React from 'react'
 import { Redux as ReducerNamespace } from '@rest-api/redux/src/ReducerStorage'
 import { Redux as SchemaNamespace } from '@rest-api/redux/src/Schema'
-import { Model, HttpError } from '@rest-api/redux'
+import { HttpError } from '@rest-api/redux'
 import { shallowEqual } from 'react-redux'
 import { useDispatch, useSelector } from '../..'
-import BasicSearchRestModel from '@rest-api/redux/src/restmodels/basic/BasicSearchRestModel'
-import ComplexSearchRestModel from '@rest-api/redux/src/restmodels/ComplexSearchRestModel'
+import { BasicSearchRestModel } from '@rest-api/redux/src/restmodels/basic/BasicSearchRestModel'
+import { ComplexSearchRestModel } from '@rest-api/redux/src/restmodels/ComplexSearchRestModel'
+import { BasicRestModel } from '@rest-api/redux/src/restmodels/basic/BasicRestModel'
 
 export type PropsFromItem<PartialItem, PopulatedItem, MetaData> = {
     populated: true,
@@ -32,7 +33,7 @@ export default function useGetPopulated<
     FullPopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
     Metadata>(
-        model: Model<RealType, PopulatedType, FullPopulatedType, IdKey, any, Metadata> | BasicSearchRestModel<RealType, PopulatedType, FullPopulatedType, IdKey, any, Metadata>,
+        model: BasicRestModel<RealType, PopulatedType, FullPopulatedType, IdKey, any, Metadata> | BasicSearchRestModel<RealType, PopulatedType, FullPopulatedType, IdKey, any, Metadata>,
         queryString?: string | URLSearchParams
     ): PropsFromItem<PopulatedType, FullPopulatedType, Metadata> {
     type Result = PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType }
@@ -41,25 +42,25 @@ export default function useGetPopulated<
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
-            populated: model.utils.isPopulated(state, queryString?.toString()),
-            items: model.utils.getPopulated(state, queryString?.toString()) as any,
-            loading: model.utils.isFetching(state, queryString?.toString()),
-            metadata: model.utils.getMetadata(state, queryString?.toString()),
-            invalidated: model.utils.isInvalidated(state, queryString?.toString()),
-            error: model.utils.getError(state, queryString?.toString()),
+            populated: model._utils.isPopulated(state, queryString?.toString()),
+            items: model._utils.getPopulated(state, queryString?.toString()) as any,
+            loading: model._utils.isFetching(state, queryString?.toString()),
+            metadata: model._utils.getMetadata(state, queryString?.toString()),
+            invalidated: model._utils.isInvalidated(state, queryString?.toString()),
+            error: model._utils.getError(state, queryString?.toString()),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(model.actions.fetchPopulatedIfNeeded(queryString?.toString()))
+        dispatch(model._actions.fetchPopulatedIfNeeded(queryString?.toString()))
         const { items: currentItems, ...currentState } = state
         const { items: prevItems, ...prevState } = result
         if (!shallowEqual(prevState, currentState)) setResult(state)
         else if (currentItems.length !== prevItems.length) setResult(state)
-        else if (model.utils.get(currentState.state, queryString?.toString()).some(item => {
+        else if (model._utils.get(currentState.state, queryString?.toString()).some(item => {
             let count = 0
             model.model.schema._getModelValuesToPopulate(item, (model, id) => {
-                if (model.utils.getById(currentState.state, id) !== model.utils.getById(prevState.state, id)) count++
+                if (model._utils.getById(currentState.state, id) !== model._utils.getById(prevState.state, id)) count++
             })
             return count > 0
         })) setResult(state)
@@ -86,25 +87,25 @@ export function useGetPopulatedExtended<
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
-            populated: model.utils.isPopulated(opts, state, queryString?.toString()),
-            items: model.utils.getPopulated(opts, state, queryString?.toString()) as any,
-            loading: model.utils.isFetching(opts, state, queryString?.toString()),
-            metadata: model.utils.getMetadata(opts, state, queryString?.toString()),
-            invalidated: model.utils.isInvalidated(opts, state, queryString?.toString()),
-            error: model.utils.getError(opts, state, queryString?.toString()),
+            populated: model._utils.isPopulated(opts, state, queryString?.toString()),
+            items: model._utils.getPopulated(opts, state, queryString?.toString()) as any,
+            loading: model._utils.isFetching(opts, state, queryString?.toString()),
+            metadata: model._utils.getMetadata(opts, state, queryString?.toString()),
+            invalidated: model._utils.isInvalidated(opts, state, queryString?.toString()),
+            error: model._utils.getError(opts, state, queryString?.toString()),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(model.actions.fetchPopulatedIfNeeded(opts, queryString?.toString()))
+        dispatch(model._actions.fetchPopulatedIfNeeded(opts, queryString?.toString()))
         const { items: currentItems, ...currentState } = state
         const { items: prevItems, ...prevState } = result
         if (!shallowEqual(prevState, currentState)) setResult(state)
         else if (currentItems.length !== prevItems.length) setResult(state)
-        else if (model.utils.get(opts, currentState.state, queryString?.toString()).some(item => {
+        else if (model._utils.get(opts, currentState.state, queryString?.toString()).some(item => {
             let count = 0
             model.model.schema._getModelValuesToPopulate(item, (model, id) => {
-                if (model.utils.getById(currentState.state, id) !== model.utils.getById(prevState.state, id)) count++
+                if (model._utils.getById(currentState.state, id) !== model._utils.getById(prevState.state, id)) count++
             })
             return count > 0
         })) setResult(state)

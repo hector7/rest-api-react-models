@@ -17,7 +17,7 @@ describe('getSubModelWithKey extended', () => {
         global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
             send() {
                 switch (this.responseURL) {
-                    case '/api/libraryByName/real/pepita':
+                    case '/api/libraryByName/real/pepita/':
                         setTimeout(() => {
                             this.respond(200, {}, JSON.stringify({ id: 1, name: 'pepita' } as LibraryType))
                         }, 40)
@@ -44,7 +44,7 @@ describe('getSubModelWithKey extended', () => {
         global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
             send() {
                 switch (this.responseURL) {
-                    case '/api/libraryByName/real/pepita':
+                    case '/api/libraryByName/real/pepita/':
                         return setTimeout(() => {
                             this.respond(200, {}, JSON.stringify({ id: 1, name: 'pepita' } as LibraryType))
                         }, 10)

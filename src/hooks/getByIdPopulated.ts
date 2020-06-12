@@ -1,11 +1,12 @@
 import React from 'react'
 import { Redux as ReducerNamespace } from '@rest-api/redux/src/ReducerStorage'
 import { Redux as SchemaNamespace } from '@rest-api/redux/src/Schema'
-import { Model, HttpError } from '@rest-api/redux'
+import { HttpError } from '@rest-api/redux'
 import { shallowEqual } from 'react-redux'
 import { useDispatch, useSelector } from '../..'
-import BasicIdRestModel from '@rest-api/redux/src/restmodels/basic/BasicIdRestModel'
-import ComplexIdRestModel from '@rest-api/redux/src/restmodels/ComplexIdRestModel'
+import { BasicIdRestModel } from '@rest-api/redux/src/restmodels/basic/BasicIdRestModel'
+import { ComplexIdRestModel } from '@rest-api/redux/src/restmodels/ComplexIdRestModel'
+import { BasicRestModel } from '@rest-api/redux/src/restmodels/basic/BasicRestModel'
 
 export type PropsFromItem<PartialItem, PopulatedItem> = {
     populated: true,
@@ -26,7 +27,7 @@ export type PropsFromItem<PartialItem, PopulatedItem> = {
 export default function useGetByIdPopulated<PopulatedType,
     FullPopulatedType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string>(
-        model: Model<any, PopulatedType, FullPopulatedType, IdKey, any, any> | BasicIdRestModel<any, PopulatedType, FullPopulatedType, IdKey>,
+        model: BasicRestModel<any, PopulatedType, FullPopulatedType, IdKey, any, any> | BasicIdRestModel<any, PopulatedType, FullPopulatedType, IdKey>,
         id: PopulatedType[IdKey]
     ): PropsFromItem<PopulatedType, FullPopulatedType> {
     type Result = PropsFromItem<PopulatedType, FullPopulatedType>
@@ -34,16 +35,16 @@ export default function useGetByIdPopulated<PopulatedType,
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<PopulatedType, FullPopulatedType> = {
-            item: model.utils.getByIdPopulated(state, id) as any,
-            loading: model.utils.isIdFetching(state, id),
-            populated: model.utils.isIdPopulated(state, id),
-            invalidated: model.utils.isIdInvalidated(state, id),
-            error: model.utils.getIdError(state, id),
+            item: model._utils.getByIdPopulated(state, id) as any,
+            loading: model._utils.isIdFetching(state, id),
+            populated: model._utils.isIdPopulated(state, id),
+            invalidated: model._utils.isIdInvalidated(state, id),
+            error: model._utils.getIdError(state, id),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(model.actions.fetchByIdPopulatedIfNeeded(id))
+        dispatch(model._actions.fetchByIdPopulatedIfNeeded(id))
         const { item: newItem, ...newOthers } = state
         const { item, ...others } = result
         if (!shallowEqual(newOthers, others) || (newItem && !item) || state.populated !== result.populated) {
@@ -68,16 +69,16 @@ export function useGetByIdPopulatedExtended<
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<PopulatedType, FullPopulatedType> = {
-            item: model.utils.getByIdPopulated(state, opts, id) as any,
-            loading: model.utils.isIdFetching(state, opts, id),
-            populated: model.utils.isIdPopulated(state, opts, id),
-            invalidated: model.utils.isIdInvalidated(state, opts, id),
-            error: model.utils.getIdError(state, opts, id),
+            item: model._utils.getByIdPopulated(state, opts, id) as any,
+            loading: model._utils.isIdFetching(state, opts, id),
+            populated: model._utils.isIdPopulated(state, opts, id),
+            invalidated: model._utils.isIdInvalidated(state, opts, id),
+            error: model._utils.getIdError(state, opts, id),
         }
         return resultState
     })
     React.useEffect(() => {
-        dispatch(model.actions.fetchByIdPopulatedIfNeeded(opts, id))
+        dispatch(model._actions.fetchByIdPopulatedIfNeeded(opts, id))
         const { item: newItem, ...newOthers } = state
         const { item, ...others } = state
         if (!shallowEqual(newOthers, others) || (newItem && !item) || state.populated !== result.populated) {

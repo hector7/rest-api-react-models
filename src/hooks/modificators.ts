@@ -1,7 +1,8 @@
 import React from 'react'
 import { Redux as SchemaNamespace } from '@rest-api/redux/src/Schema'
-import { Model, HttpError, Callback } from '@rest-api/redux'
+import { HttpError, Callback } from '@rest-api/redux'
 import { useDispatch } from '../..'
+import { BasicRestModel } from '@rest-api/redux/src/restmodels/basic/BasicRestModel'
 
 export type PropsFromItem<Item, IdKey extends keyof Item> = {
     post: (item: Omit<Item, IdKey> | FormData, callback: Callback<Item, HttpError>) => any,
@@ -19,9 +20,9 @@ export default function useModificators<
     RealType,
     IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string,
     Metadata>(
-        model: Model<RealType, any, any, IdKey, any, Metadata>,
+        model: BasicRestModel<RealType, any, any, IdKey, any, Metadata>,
 ): PropsFromItem<RealType, IdKey> {
-    const { post, put, patch, delete: remove, invalidate, invalidateById, invalidateAll } = model.actions
+    const { post, put, patch, delete: remove, invalidate, invalidateById, invalidateAll } = model._actions
     const dispatch = useDispatch()
     return {
         invalidate: (...args) => dispatch(invalidate(args[0]?.toString())),
