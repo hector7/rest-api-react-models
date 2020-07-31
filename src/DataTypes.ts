@@ -1,2 +1,6 @@
 export { default as default } from './proxies/Model'
 export { default as Schema } from './proxies/Schema'
+export { default as BasicIdRestModel } from './proxies/BasicIdRestModel'
+export { default as BasicSearchRestModel } from './proxies/BasicSearchRestModel'
+export { default as ComplexIdRestModel } from './proxies/ComplexIdRestModel'
+export { default as ComplexSearchRestModel } from './proxies/ComplexSearchRestModel'

@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from '../..'
 import { BasicIdRestModel } from '@rest-api/redux/src/restmodels/basic/BasicIdRestModel'
 import { ComplexIdRestModel } from '@rest-api/redux/src/restmodels/ComplexIdRestModel'
 import { BasicRestModel } from '@rest-api/redux/src/restmodels/basic/BasicRestModel'
+import { Schema } from '../DataTypes'
 
 export type PropsFromItem<Item> = {
     item: Item | null;
@@ -16,16 +17,16 @@ export type PropsFromItem<Item> = {
 }
 
 
-export default function useGetById<RealType,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string>(
-        model: BasicRestModel<RealType, any, any, IdKey, any, any> | BasicIdRestModel<RealType, any, any, IdKey>,
-        id: RealType[IdKey]
-    ): PropsFromItem<RealType> {
-    type Result = PropsFromItem<RealType>
+export default function useGetById<S extends Schema<any>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<S["RealType"]> & string>(
+        model: BasicRestModel<S, IdKey, any, any> | BasicIdRestModel<S, IdKey>,
+        id: S["RealType"][IdKey]
+    ): PropsFromItem<S["RealType"]> {
+    type Result = PropsFromItem<S["RealType"]>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: PropsFromItem<RealType> = {
+        const resultState: PropsFromItem<S["RealType"]> = {
             item: model._utils.getById(state, id),
             loading: model._utils.isIdFetching(state, id),
             invalidated: model._utils.isIdInvalidated(state, id),
@@ -42,17 +43,17 @@ export default function useGetById<RealType,
 
 export function useGetByIdExtended<
     Opts,
-    RealType,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & string>(
-        model: ComplexIdRestModel<Opts, RealType, any, any, IdKey>,
+    S extends Schema<any>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<S["RealType"]> & string>(
+        model: ComplexIdRestModel<Opts, S, IdKey>,
         opts: Opts,
-        id: RealType[IdKey]
-    ): PropsFromItem<RealType> {
-    type Result = PropsFromItem<RealType>
+        id: S["RealType"][IdKey]
+    ): PropsFromItem<S["RealType"]> {
+    type Result = PropsFromItem<S["RealType"]>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: PropsFromItem<RealType> = {
+        const resultState: PropsFromItem<S["RealType"]> = {
             item: model._utils.getById(state, opts, id),
             loading: model._utils.isIdFetching(state, opts, id),
             invalidated: model._utils.isIdInvalidated(state, opts, id),

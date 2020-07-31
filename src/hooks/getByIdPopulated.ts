@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from '../..'
 import { BasicIdRestModel } from '@rest-api/redux/src/restmodels/basic/BasicIdRestModel'
 import { ComplexIdRestModel } from '@rest-api/redux/src/restmodels/ComplexIdRestModel'
 import { BasicRestModel } from '@rest-api/redux/src/restmodels/basic/BasicRestModel'
+import { Schema } from '../DataTypes'
 
 export type PropsFromItem<PartialItem, PopulatedItem> = {
     populated: true,
@@ -24,17 +25,16 @@ export type PropsFromItem<PartialItem, PopulatedItem> = {
 
 
 
-export default function useGetByIdPopulated<PopulatedType,
-    FullPopulatedType,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string>(
-        model: BasicRestModel<any, PopulatedType, FullPopulatedType, IdKey, any, any> | BasicIdRestModel<any, PopulatedType, FullPopulatedType, IdKey>,
-        id: PopulatedType[IdKey]
-    ): PropsFromItem<PopulatedType, FullPopulatedType> {
-    type Result = PropsFromItem<PopulatedType, FullPopulatedType>
+export default function useGetByIdPopulated<S extends Schema<any>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<S["PopulatedType"]> & string>(
+        model: BasicRestModel<S, IdKey, any, any> | BasicIdRestModel<S, IdKey>,
+        id: S["PopulatedType"][IdKey]
+    ): PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> {
+    type Result = PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, populated: false, invalidated: true, loading: false, [name]: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: PropsFromItem<PopulatedType, FullPopulatedType> = {
+        const resultState: PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> = {
             item: model._utils.getByIdPopulated(state, id) as any,
             loading: model._utils.isIdFetching(state, id),
             populated: model._utils.isIdPopulated(state, id),
@@ -57,18 +57,17 @@ export default function useGetByIdPopulated<PopulatedType,
 
 export function useGetByIdPopulatedExtended<
     Opts,
-    PopulatedType,
-    FullPopulatedType,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<PopulatedType> & string>(
-        model: ComplexIdRestModel<Opts, any, PopulatedType, FullPopulatedType, IdKey>,
+    S extends Schema<any>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<S["PopulatedType"]> & string>(
+        model: ComplexIdRestModel<Opts, S, IdKey>,
         opts: Opts,
-        id: PopulatedType[IdKey]
-    ): PropsFromItem<PopulatedType, FullPopulatedType> {
-    type Result = PropsFromItem<PopulatedType, FullPopulatedType>
+        id: S["PopulatedType"][IdKey]
+    ): PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> {
+    type Result = PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]>
     const [result, setResult] = React.useState<Result>(<any>{ error: null, populated: false, invalidated: true, loading: false, [name]: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: PropsFromItem<PopulatedType, FullPopulatedType> = {
+        const resultState: PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> = {
             item: model._utils.getByIdPopulated(state, opts, id) as any,
             loading: model._utils.isIdFetching(state, opts, id),
             populated: model._utils.isIdPopulated(state, opts, id),

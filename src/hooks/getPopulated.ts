@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from '../..'
 import { BasicSearchRestModel } from '@rest-api/redux/src/restmodels/basic/BasicSearchRestModel'
 import { ComplexSearchRestModel } from '@rest-api/redux/src/restmodels/ComplexSearchRestModel'
 import { BasicRestModel } from '@rest-api/redux/src/restmodels/basic/BasicRestModel'
+import { Schema } from '../DataTypes'
 
 export type PropsFromItem<PartialItem, PopulatedItem, MetaData> = {
     populated: true,
@@ -28,19 +29,17 @@ export type PropsFromItem<PartialItem, PopulatedItem, MetaData> = {
 
 
 export default function useGetPopulated<
-    RealType,
-    PopulatedType,
-    FullPopulatedType,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
+    S extends Schema<any>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<S["RealType"]> & SchemaNamespace.StringOrNumberKeys<S["PopulatedType"]> & string,
     Metadata>(
-        model: BasicRestModel<RealType, PopulatedType, FullPopulatedType, IdKey, any, Metadata> | BasicSearchRestModel<RealType, PopulatedType, FullPopulatedType, IdKey, any, Metadata>,
+        model: BasicRestModel<S, IdKey, any, Metadata> | BasicSearchRestModel<S, IdKey, any, Metadata>,
         queryString?: string | URLSearchParams
-    ): PropsFromItem<PopulatedType, FullPopulatedType, Metadata> {
-    type Result = PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType }
+    ): PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> {
+    type Result = PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> & { state: ReducerNamespace.ReducerType }
     const [result, setResult] = React.useState<Result>({ error: null, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: <any>{} })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType } = {
+        const resultState: PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
             populated: model._utils.isPopulated(state, queryString?.toString()),
             items: model._utils.getPopulated(state, queryString?.toString()) as any,
@@ -72,20 +71,18 @@ export default function useGetPopulated<
 
 export function useGetPopulatedExtended<
     Opts,
-    RealType,
-    PopulatedType,
-    FullPopulatedType,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<RealType> & SchemaNamespace.StringOrNumberKeys<PopulatedType> & string,
+    S extends Schema<any>,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<S["RealType"]> & SchemaNamespace.StringOrNumberKeys<S["PopulatedType"]> & string,
     Metadata>(
-        model: ComplexSearchRestModel<Opts, RealType, PopulatedType, FullPopulatedType, IdKey, any, Metadata>,
+        model: ComplexSearchRestModel<Opts, S, IdKey, any, Metadata>,
         opts: Opts,
         queryString?: string | URLSearchParams
-    ): PropsFromItem<PopulatedType, FullPopulatedType, Metadata> {
-    type Result = PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType }
+    ): PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> {
+    type Result = PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> & { state: ReducerNamespace.ReducerType }
     const [result, setResult] = React.useState<Result>({ error: null, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: <any>{} })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
-        const resultState: PropsFromItem<PopulatedType, FullPopulatedType, Metadata> & { state: ReducerNamespace.ReducerType } = {
+        const resultState: PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
             populated: model._utils.isPopulated(opts, state, queryString?.toString()),
             items: model._utils.getPopulated(opts, state, queryString?.toString()) as any,
