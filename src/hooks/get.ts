@@ -29,7 +29,7 @@ export default function useGet<
     queryString?: string | URLSearchParams
 ): PropsFromItem<S["RealType"], Metadata> {
     type Result = PropsFromItem<S["RealType"], Metadata> & { state: ReducerNamespace.ReducerType }
-    const [result, setResult] = React.useState<Omit<Result, 'redirect'>>({ error: null, metadata: null, invalidated: true, loading: false, items: [], state: <any>{} })
+    const [result, setResult] = React.useState<Omit<Result, 'redirect'>>({ error: null, metadata: null, invalidated: true, loading: false, items: [], state: {} })
     const dispatch = useDispatch()
     function redirect() {
         dispatch(model._actions.invalidate(queryString?.toString()))
@@ -70,7 +70,7 @@ export function useGetExtended<
     queryString?: string | URLSearchParams
 ): PropsFromItem<S["RealType"], Metadata> {
     type Result = PropsFromItem<S["RealType"], Metadata> & { state: ReducerNamespace.ReducerType }
-    const [result, setResult] = React.useState<Omit<Result, 'redirect'>>({ error: null, metadata: null, invalidated: true, loading: false, items: [], state: <any>{} })
+    const [result, setResult] = React.useState<Omit<Result, 'redirect'>>({ error: null, metadata: null, invalidated: true, loading: false, items: [], state: {} })
     const dispatch = useDispatch()
     function redirect() {
         dispatch(model._actions.invalidate(opts, queryString?.toString()))

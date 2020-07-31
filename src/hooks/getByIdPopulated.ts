@@ -31,11 +31,11 @@ export default function useGetByIdPopulated<S extends Schema<any>,
         id: S["PopulatedType"][IdKey]
     ): PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> {
     type Result = PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]>
-    const [result, setResult] = React.useState<Result>(<any>{ error: null, populated: false, invalidated: true, loading: false, [name]: null })
+    const [result, setResult] = React.useState<Result>({ error: null, populated: false, invalidated: true, loading: false, item: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> = {
-            item: model._utils.getByIdPopulated(state, id) as any,
+            item: model._utils.getByIdPopulated(state, id),
             loading: model._utils.isIdFetching(state, id),
             populated: model._utils.isIdPopulated(state, id),
             invalidated: model._utils.isIdInvalidated(state, id),
@@ -64,11 +64,11 @@ export function useGetByIdPopulatedExtended<
         id: S["PopulatedType"][IdKey]
     ): PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> {
     type Result = PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]>
-    const [result, setResult] = React.useState<Result>(<any>{ error: null, populated: false, invalidated: true, loading: false, [name]: null })
+    const [result, setResult] = React.useState<Result>({ error: null, populated: false, invalidated: true, loading: false, item: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> = {
-            item: model._utils.getByIdPopulated(state, opts, id) as any,
+            item: model._utils.getByIdPopulated(state, opts, id),
             loading: model._utils.isIdFetching(state, opts, id),
             populated: model._utils.isIdPopulated(state, opts, id),
             invalidated: model._utils.isIdInvalidated(state, opts, id),

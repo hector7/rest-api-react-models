@@ -36,13 +36,13 @@ export default function useGetPopulated<
         queryString?: string | URLSearchParams
     ): PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> {
     type Result = PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> & { state: ReducerNamespace.ReducerType }
-    const [result, setResult] = React.useState<Result>({ error: null, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: <any>{} })
+    const [result, setResult] = React.useState<Result>({ error: null, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: {} })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
             populated: model._utils.isPopulated(state, queryString?.toString()),
-            items: model._utils.getPopulated(state, queryString?.toString()) as any,
+            items: model._utils.getPopulated(state, queryString?.toString()),
             loading: model._utils.isFetching(state, queryString?.toString()),
             metadata: model._utils.getMetadata(state, queryString?.toString()),
             invalidated: model._utils.isInvalidated(state, queryString?.toString()),
@@ -79,13 +79,13 @@ export function useGetPopulatedExtended<
         queryString?: string | URLSearchParams
     ): PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> {
     type Result = PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> & { state: ReducerNamespace.ReducerType }
-    const [result, setResult] = React.useState<Result>({ error: null, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: <any>{} })
+    const [result, setResult] = React.useState<Result>({ error: null, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: {} })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<S["PopulatedType"], S["FullPopulatedType"], Metadata> & { state: ReducerNamespace.ReducerType } = {
             state,
             populated: model._utils.isPopulated(opts, state, queryString?.toString()),
-            items: model._utils.getPopulated(opts, state, queryString?.toString()) as any,
+            items: model._utils.getPopulated(opts, state, queryString?.toString()),
             loading: model._utils.isFetching(opts, state, queryString?.toString()),
             metadata: model._utils.getMetadata(opts, state, queryString?.toString()),
             invalidated: model._utils.isInvalidated(opts, state, queryString?.toString()),

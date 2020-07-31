@@ -23,7 +23,7 @@ export default function useGetById<S extends Schema<any>,
         id: S["RealType"][IdKey]
     ): PropsFromItem<S["RealType"]> {
     type Result = PropsFromItem<S["RealType"]>
-    const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
+    const [result, setResult] = React.useState<Result>({ error: null, invalidated: true, loading: false, item: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<S["RealType"]> = {
@@ -50,7 +50,7 @@ export function useGetByIdExtended<
         id: S["RealType"][IdKey]
     ): PropsFromItem<S["RealType"]> {
     type Result = PropsFromItem<S["RealType"]>
-    const [result, setResult] = React.useState<Result>(<any>{ error: null, invalidated: true, loading: false, [name]: null })
+    const [result, setResult] = React.useState<Result>({ error: null, invalidated: true, loading: false, item: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<S["RealType"]> = {
