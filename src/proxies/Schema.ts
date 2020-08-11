@@ -4,7 +4,7 @@ import Model from './Model'
 import BasicIdRestModel from './BasicIdRestModel'
 import ComplexIdRestModel from './ComplexIdRestModel'
 
-export default class Schema<RealType,
+export default class Schema<RealType = any,
     PopulatedType = any, FullPopulatedType = any> extends SchemaClass<RealType, PopulatedType, FullPopulatedType>{
     /** @internal */
     protected _fieldIsAnIdModel(property: any): property is OriginalModel<any, any, any, any> {

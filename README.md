@@ -14,6 +14,9 @@ Benefits:
 
 Caution: if you have some random typescript error (pex: ts2589) on creating or editing models, kill the process and restart npm start (on Visual Studio Code restart program).
 
+## Features
+ - Added nullable argument to schema fields
+ - Added initialized variable for all requests (if not initialized, is not requested)
 ## Major changes
 ### From v1
  - Upgraded typescript version and needs your proyect version >=3.9.3 (and react-scripts >= 3.4.1, if you don't eject your project)
@@ -65,7 +68,7 @@ Declare the models of your application, given a Schema, an id (need to be requir
         name: String
     })
     export  default  new  Model(librarySchema, 
-        'id', 
+        'id', // must be declared as required, string or number and not array or null
         '/api/library')
 
    
@@ -80,6 +83,18 @@ You can use complex objects on a Schema simplier creating subschemas:
         })
     })
     
+Represent a field which can be null:
+
+    import { Schema } from  '@rest-api/react-models'
+    
+    const testSchema = Schema({
+        nullableField: { 
+            type: String, 
+            nullable: true, 
+            required: true 
+        }
+    })
+
 For a model with metadata, you can represent with following arguments (declaring the data that endpoint sends):
 
     import { Model, Schema } from  '@rest-api/react-models'
@@ -190,7 +205,8 @@ Fist clean mode using Typescript, using a hook:
 
   
 	export default () => {
-		const { items, loading, error } = bookModel.useGet()
+		const { items, loading, error, initialized } = bookModel.useGet()
+        if (!initialized) <p>Request not fetched</p>
 		if (error) return  <p>There are an error with the request</p>
 		if (loading) return  <p>Loading...</p>
 		return  <ul>{
@@ -238,4 +254,33 @@ You can populate items with a simple usage (you need to check if it's populated,
 		    }
 		</tbody>
 	    </table>
+	}
+
+### Use methods (POST, PUT, PATCH, DELETE)
+In order to access to one of those methods, select the correct hook (usePost, usePut, usePatch or useDelete)
+
+
+	import React from 'react'
+
+    import { ModelType, HttpError } from '@rest-api/react-models'
+	import bookModel from '../models/bookModel'
+    import { useHistory } from 'react-router-dom'
+
+	export default () => {
+	    const post = bookModel.usePost()
+        const [data, setData] = React.useState<ModelType<typeof bookModel>|null>(null)
+        const history = useHistory()
+        const [error, setError] = React.useState<HttpError|null>(null)
+        
+        function handleSubmit(ev){
+            ev.preventDefault()
+            if(data)
+                post(data, (err, res) => {
+                    if(err) //there are an error with request
+                        return setError(err)
+                    history.push('to the new path')
+                })
+        }
+
+        return ...
 	}

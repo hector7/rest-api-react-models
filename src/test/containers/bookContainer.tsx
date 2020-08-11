@@ -16,7 +16,7 @@ export default () => {
         </thead>
         <tbody>
             {
-                result.populated ?
+                result.populated === true ?
                     result.items.map(i => <React.Fragment key={i.id}>
                         <td>{i.id}</td>
                         <td>{i.name}</td>

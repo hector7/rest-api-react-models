@@ -41,8 +41,8 @@ type Item = {
 type RequiredFields<T extends Item> = { [P in keyof T]: T[P] extends { type: any, required: true } ? P : T[P] extends [{ type: any, required: true }] ? P : never }[keyof T];
 type OptionalFields<T extends Item> = { [P in keyof T]: T[P] extends { type: any, required: true } ? never : T[P] extends [{ type: any, required: true }] ? never : P }[keyof T];
 
-type ItemFieldWithParams<T> = { type: T, required?: true | false }
-type ModelItemFieldWithParams = { type: RestModel<any, any, any, any, any>, required?: true | false, idOnly?: true | false }
+type ItemFieldWithParams<T> = { type: T, required?: true | false, nullable?: true | false }
+type ModelItemFieldWithParams = { type: RestModel<any, any, any, any, any>, required?: true | false, nullable?: true | false, idOnly?: true | false }
 type ItemFieldType = ItemFieldBasicType | [ItemFieldBasicType] | ModelItemFieldWithParams | [ModelItemFieldWithParams] | ItemFieldWithParams<ItemFieldBasicType> | [ItemFieldWithParams<ItemFieldBasicType>] | ItemFieldWithParams<ItemFieldBasicType>[]
 type ItemFieldBasicType = StringConstructor | BooleanConstructor | NumberConstructor | DateConstructor | SchemaClass<any, any, any> | RestModel<any, any, any, any, any>
 type IdPopulatedType<PopulatedType, IdKey extends keyof PopulatedType> = Uniform<Record<IdKey, PopulatedType[IdKey]> & Partial<PopulatedType>>
@@ -52,8 +52,12 @@ type CommonFieldType<arg> =
     arg extends NumberConstructor ? number :
     arg extends DateConstructor ? Date : never
 type PopulatedTypeField<arg extends Item['']> =
+    arg extends { type: any, nullable: true } ? PopulatedArrayRealTypeField<arg> | null : PopulatedArrayRealTypeField<arg>
+type PopulatedArrayRealTypeField<arg> =
     arg extends [infer c] ? GetPopulatedTypeField<c>[] : GetPopulatedTypeField<arg>
 type FullPopulatedTypeField<arg extends Item['']> =
+    arg extends { type: any, nullable: true } ? FullPopulatedArrayRealTypeField<arg> | null : FullPopulatedArrayRealTypeField<arg>
+type FullPopulatedArrayRealTypeField<arg> =
     arg extends [infer c] ? GetFullPopulatedTypeField<c>[] : GetFullPopulatedTypeField<arg>
 type GetPopulatedTypeField<arg> =
     arg extends { type: infer c } ? arg extends { type: infer c, idOnly: true } ? GetBasicPopulatedTypeField<c> : GetBasicPopulatedTypeField<c, true> : GetBasicPopulatedTypeField<arg>
@@ -77,6 +81,8 @@ type GetBasicPopulatedTypeField<arg, idOnly = false> =
         arg extends SchemaClass<any, infer PopulatedType, any> ? PopulatedType : CommonFieldType<arg>
     )
 type RealTypeField<arg extends Item['']> =
+    arg extends { type: any, nullable: true } ? ArrayRealTypeField<arg> | null : ArrayRealTypeField<arg>
+type ArrayRealTypeField<arg> =
     arg extends [infer c] ? GetRealTypeField<c>[] : GetRealTypeField<arg>
 type GetRealTypeField<arg> =
     arg extends { type: infer c } ?

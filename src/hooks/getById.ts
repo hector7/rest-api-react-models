@@ -11,6 +11,7 @@ import { Schema } from '../DataTypes'
 
 export type PropsFromItem<Item> = {
     item: Item | null;
+    initialized: boolean,
     loading: boolean;
     invalidated: boolean;
     error: HttpError | null;
@@ -23,12 +24,13 @@ export default function useGetById<S extends Schema<any>,
         id: S["RealType"][IdKey]
     ): PropsFromItem<S["RealType"]> {
     type Result = PropsFromItem<S["RealType"]>
-    const [result, setResult] = React.useState<Result>({ error: null, invalidated: true, loading: false, item: null })
+    const [result, setResult] = React.useState<Result>({ error: null, initialized: false, invalidated: true, loading: false, item: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<S["RealType"]> = {
             item: model._utils.getById(state, id),
             loading: model._utils.isIdFetching(state, id),
+            initialized: model._utils.isIdInitialized(state, id),
             invalidated: model._utils.isIdInvalidated(state, id),
             error: model._utils.getIdError(state, id),
         }
@@ -50,11 +52,12 @@ export function useGetByIdExtended<
         id: S["RealType"][IdKey]
     ): PropsFromItem<S["RealType"]> {
     type Result = PropsFromItem<S["RealType"]>
-    const [result, setResult] = React.useState<Result>({ error: null, invalidated: true, loading: false, item: null })
+    const [result, setResult] = React.useState<Result>({ error: null, initialized: false, invalidated: true, loading: false, item: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<S["RealType"]> = {
             item: model._utils.getById(state, opts, id),
+            initialized: model._utils.isIdInitialized(state, opts, id),
             loading: model._utils.isIdFetching(state, opts, id),
             invalidated: model._utils.isIdInvalidated(state, opts, id),
             error: model._utils.getIdError(state, opts, id),

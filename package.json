@@ -110,7 +110,7 @@
     "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
-    "@rest-api/redux": "^2.0.8",
+    "@rest-api/redux": "^2.1.0",
     "react-redux": "^7.2.0",
     "redux": "^4.0.5"
   },

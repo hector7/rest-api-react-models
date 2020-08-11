@@ -11,10 +11,10 @@ import useGetById from '../hooks/getById'
 import useGetByIdPopulated from '../hooks/getByIdPopulated'
 import { BasicRestModel } from '@rest-api/redux/src/restmodels/basic/BasicRestModel'
 
-export default class Model<S extends Schema<any>,
-    IdKey extends SchemaNamespace.StringOrNumberKeys<S["RealType"]> & SchemaNamespace.StringOrNumberKeys<S["PopulatedType"]> & string,
-    GetItem,
-    MetaData> 
+export default class Model<S extends Schema<any> = any,
+    IdKey extends SchemaNamespace.StringOrNumberKeys<S["RealType"]> & SchemaNamespace.StringOrNumberKeys<S["PopulatedType"]> & string = any,
+    GetItem = any,
+    MetaData = any>
     extends BasicRestModel<S, IdKey, GetItem, MetaData> {
 
     public useGet(queryString?: string | URLSearchParams) {
@@ -29,19 +29,19 @@ export default class Model<S extends Schema<any>,
         return useModificators(this)
     }
 
-    public usePost(){
+    public usePost() {
         return useModificators(this).post
     }
 
-    public usePatch(){
+    public usePatch() {
         return useModificators(this).patch
     }
 
-    public usePut(){
+    public usePut() {
         return useModificators(this).put
     }
 
-    public useDelete(){
+    public useDelete() {
         return useModificators(this).remove
     }
 

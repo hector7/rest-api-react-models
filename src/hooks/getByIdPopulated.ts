@@ -12,12 +12,14 @@ import { Schema } from '../DataTypes'
 export type PropsFromItem<PartialItem, PopulatedItem> = {
     populated: true,
     invalidated: boolean;
+    initialized: boolean,
     error: HttpError | null;
     loading: boolean;
     item: PopulatedItem;
 } | {
     item: PartialItem | null;
     loading: boolean;
+    initialized: boolean,
     populated: false,
     invalidated: boolean;
     error: HttpError | null;
@@ -31,13 +33,14 @@ export default function useGetByIdPopulated<S extends Schema<any>,
         id: S["PopulatedType"][IdKey]
     ): PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> {
     type Result = PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]>
-    const [result, setResult] = React.useState<Result>({ error: null, populated: false, invalidated: true, loading: false, item: null })
+    const [result, setResult] = React.useState<Result>({ error: null, populated: false, initialized: false, invalidated: true, loading: false, item: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> = {
             item: model._utils.getByIdPopulated(state, id),
             loading: model._utils.isIdFetching(state, id),
             populated: model._utils.isIdPopulated(state, id),
+            initialized: model._utils.isIdInitialized(state, id),
             invalidated: model._utils.isIdInvalidated(state, id),
             error: model._utils.getIdError(state, id),
         }
@@ -64,12 +67,13 @@ export function useGetByIdPopulatedExtended<
         id: S["PopulatedType"][IdKey]
     ): PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> {
     type Result = PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]>
-    const [result, setResult] = React.useState<Result>({ error: null, populated: false, invalidated: true, loading: false, item: null })
+    const [result, setResult] = React.useState<Result>({ error: null, populated: false, initialized: false, invalidated: true, loading: false, item: null })
     const dispatch = useDispatch()
     const state = useSelector<ReducerNamespace.ReducerType, Result>(state => {
         const resultState: PropsFromItem<S["PopulatedType"], S["FullPopulatedType"]> = {
             item: model._utils.getByIdPopulated(state, opts, id),
             loading: model._utils.isIdFetching(state, opts, id),
+            initialized: model._utils.isIdInitialized(state, opts, id),
             populated: model._utils.isIdPopulated(state, opts, id),
             invalidated: model._utils.isIdInvalidated(state, opts, id),
             error: model._utils.getIdError(state, opts, id),
