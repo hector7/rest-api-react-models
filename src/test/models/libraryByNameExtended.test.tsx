@@ -29,7 +29,7 @@ describe('getSubModelWithKey extended', () => {
             <LibraryComponentGetById />
         </Provider>);
         setTimeout(() => {
-            const linkElement = getByText(/pepita/i);
+            getByText(/pepita/i); //raises an error if pepita text not found
             d()
         }, 80)
     });
@@ -56,7 +56,7 @@ describe('getSubModelWithKey extended', () => {
             <LibraryComponentGetByIdPopulated />
         </Provider>);
         setTimeout(() => {
-            const linkElement = getByText(/pepita/i);
+            getByText(/pepita/i);
             d()
         }, 80)
     });

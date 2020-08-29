@@ -1,20 +1,59 @@
 import React from 'react'
 import { Provider as DefaultProvider, ReactReduxContextValue, createSelectorHook, createDispatchHook } from 'react-redux'
-import { Types, configureStore } from '@rest-api/redux'
-export { HttpError, Callback, filterNulls } from '@rest-api/redux'
-import Model, { Schema as SchemaClass, BasicIdRestModel, ComplexIdRestModel } from './src/DataTypes'
-import { RestModel } from '@rest-api/redux/src/restmodels'
-import { default as BasicRestModel } from './src/DataTypes'
-export { default as Model } from './src/DataTypes'
-const { required } = Types
-export { required, required as idOnly }
+import Model, { SchemaClass } from './src/DataTypes'
+import thunkMiddleware from 'redux-thunk'
+import { createStore, applyMiddleware } from 'redux'
+import ReducerStorage from './src/models/ReducerStorage'
+export { default as Model, Schema, SchemaClass } from './src/DataTypes'
+const TRUE: true = true
+export { TRUE as required, TRUE as idOnly }
 const initialContext: any = null
 const Context = React.createContext<ReactReduxContextValue<any, any>>(initialContext)
-export function Schema<I extends Item>(schema: I) {
-    return new SchemaClass<RealType<I>, PopulatedType<I>, FullPopulatedType<I>>(schema)
-}
 export const useSelector = createSelectorHook(Context)
 export const useDispatch = createDispatchHook(Context)
+export type Callback<T, Err = Error> = (err: Err | null, res?: T) => void
+export class HttpError {
+    readonly codeNumber: number
+    readonly date: Date
+    readonly message: string
+    constructor(status: number, message: string,) {
+        this.codeNumber = status
+        this.date = new Date()
+        this.message = message
+    }
+}
+
+
+export function createAction<T extends string>(type: T): Action<T>
+export function createAction<T extends string, P>(type: T, payload: P): Action<T, P>
+export function createAction<T extends string, P = {}>(type: T, payload?: P) {
+    if (payload) {
+        return { type, ...payload }
+    }
+    return { type }
+}
+
+export type ActionUnion<A extends { [actionsCreator: string]: (...args: any[]) => any }> = ReturnType<A[keyof A]>
+
+export type Action<T extends string, P = {}> = {
+    type: T
+} & P
+
+type MakeMetaDataOptions<GetItem, Item, MetaData> = {
+    getItems: (data: GetItem) => Item[],
+    getMetadata: (data: GetItem) => MetaData,
+}
+type MakeOptions<GetItem, Item> = {
+    getItems?: (data: GetItem) => Item[],
+    getMetadata?: never
+}
+type CommonOptions = {
+    headers?: { [key: string]: string }
+    trailingSlash?: boolean
+}
+export type Options<GetItem, Item, MetaData> = CommonOptions & (MetaData extends undefined ? MakeOptions<GetItem, Item> : MakeMetaDataOptions<GetItem, Item, MetaData>)
+
+export type ProjectionType<T, Projection extends Partial<{ [key in keyof T]: 1 }>> = Pick<T, { [k in keyof T]: Projection[k] extends 1 ? k : never }[keyof T]>
 
 export type ModelType<M extends Model<any, any, any, any> | SchemaClass<any>> =
     M extends Model<infer T, any, any, any> ? T["RealType"] :
@@ -27,91 +66,12 @@ export type FullPopulatedModelType<M extends Model<any, any, any, any> | SchemaC
     M extends SchemaClass<any> ? M['FullPopulatedType'] : never
 
 export function getProvider() {
-    const store = configureStore()
+    const store = createStore(ReducerStorage.generalReducer, {}, applyMiddleware(thunkMiddleware))
     const Provider: React.FC<{}> = (props) => {
         return <DefaultProvider {...props} store={store} context={Context} />
     }
     return Provider
 }
-
-type Uniform<T extends { [K: string]: any }> = { [K in keyof T]: T[K] }
-type Item = {
-    [key: string]: ItemFieldType
-};
-type RequiredFields<T extends Item> = { [P in keyof T]: T[P] extends { type: any, required: true } ? P : T[P] extends [{ type: any, required: true }] ? P : never }[keyof T];
-type OptionalFields<T extends Item> = { [P in keyof T]: T[P] extends { type: any, required: true } ? never : T[P] extends [{ type: any, required: true }] ? never : P }[keyof T];
-
-type ItemFieldWithParams<T> = { type: T, required?: true | false, nullable?: true | false }
-type ModelItemFieldWithParams = { type: RestModel<any, any, any, any, any>, required?: true | false, nullable?: true | false, idOnly?: true | false }
-type ItemFieldType = ItemFieldBasicType | [ItemFieldBasicType] | ModelItemFieldWithParams | [ModelItemFieldWithParams] | ItemFieldWithParams<ItemFieldBasicType> | [ItemFieldWithParams<ItemFieldBasicType>] | ItemFieldWithParams<ItemFieldBasicType>[]
-type ItemFieldBasicType = StringConstructor | BooleanConstructor | NumberConstructor | DateConstructor | SchemaClass<any, any, any> | RestModel<any, any, any, any, any>
-type IdPopulatedType<PopulatedType, IdKey extends keyof PopulatedType> = Uniform<Record<IdKey, PopulatedType[IdKey]> & Partial<PopulatedType>>
-type CommonFieldType<arg> =
-    arg extends StringConstructor ? string :
-    arg extends BooleanConstructor ? boolean :
-    arg extends NumberConstructor ? number :
-    arg extends DateConstructor ? Date : never
-type PopulatedTypeField<arg extends Item['']> =
-    arg extends { type: any, nullable: true } ? PopulatedArrayRealTypeField<arg> | null : PopulatedArrayRealTypeField<arg>
-type PopulatedArrayRealTypeField<arg> =
-    arg extends [infer c] ? GetPopulatedTypeField<c>[] : GetPopulatedTypeField<arg>
-type FullPopulatedTypeField<arg extends Item['']> =
-    arg extends { type: any, nullable: true } ? FullPopulatedArrayRealTypeField<arg> | null : FullPopulatedArrayRealTypeField<arg>
-type FullPopulatedArrayRealTypeField<arg> =
-    arg extends [infer c] ? GetFullPopulatedTypeField<c>[] : GetFullPopulatedTypeField<arg>
-type GetPopulatedTypeField<arg> =
-    arg extends { type: infer c } ? arg extends { type: infer c, idOnly: true } ? GetBasicPopulatedTypeField<c> : GetBasicPopulatedTypeField<c, true> : GetBasicPopulatedTypeField<arg>
-type GetFullPopulatedTypeField<arg> =
-    arg extends { type: infer c } ? GetBasicFullPopulatedTypeField<c> : GetBasicFullPopulatedTypeField<arg>
-type GetBasicFullPopulatedTypeField<arg> =
-    arg extends BasicRestModel<infer S, infer Id, any, any> ? S['FullPopulatedType'] :
-    arg extends BasicIdRestModel<infer S, infer Id> ? S['FullPopulatedType'] :
-    arg extends ComplexIdRestModel<any, infer S, infer Id> ? S['FullPopulatedType'][] :
-    arg extends SchemaClass<any, any, infer FullPopulatedType> ? FullPopulatedType : CommonFieldType<arg>
-type GetBasicPopulatedTypeField<arg, idOnly = false> =
-    idOnly extends true ? (
-        arg extends BasicRestModel<infer S, infer Id, any, any> ? S['PopulatedType'] :
-        arg extends BasicIdRestModel<infer S, infer Id> ? S['PopulatedType'] :
-        arg extends ComplexIdRestModel<any, infer S, infer Id> ? S['PopulatedType'][] :
-        arg extends SchemaClass<any, infer PopulatedType, any> ? PopulatedType : CommonFieldType<arg>
-    ) : (
-        arg extends BasicRestModel<infer S, infer Id, any, any> ? IdPopulatedType<S['PopulatedType'], Id> :
-        arg extends BasicIdRestModel<infer S, infer Id> ? IdPopulatedType<S['PopulatedType'], Id> :
-        arg extends ComplexIdRestModel<any, infer S, infer Id> ? S['PopulatedType'][] :
-        arg extends SchemaClass<any, infer PopulatedType, any> ? PopulatedType : CommonFieldType<arg>
-    )
-type RealTypeField<arg extends Item['']> =
-    arg extends { type: any, nullable: true } ? ArrayRealTypeField<arg> | null : ArrayRealTypeField<arg>
-type ArrayRealTypeField<arg> =
-    arg extends [infer c] ? GetRealTypeField<c>[] : GetRealTypeField<arg>
-type GetRealTypeField<arg> =
-    arg extends { type: infer c } ?
-    arg extends { type: infer c, idOnly: true } ? GetBasicRealTypeField<c> : GetBasicRealTypeField<c, true>
-    : GetBasicRealTypeField<arg>
-type GetBasicRealTypeField<arg, idOnly = false> =
-    idOnly extends true ? (
-        arg extends BasicRestModel<infer S, infer Id, any, any> ? S['RealType'] :
-        arg extends BasicIdRestModel<infer S, infer Id> ? S['RealType'] :
-        arg extends ComplexIdRestModel<any, infer S, infer Id> ? never :
-        arg extends SchemaClass<infer RealType, infer d, any> ? RealType : CommonFieldType<arg>
-    ) : (
-        arg extends BasicRestModel<infer S, infer Id, any, any> ? S['RealType'][Id] :
-        arg extends BasicIdRestModel<infer S, infer Id> ? S['RealType'][Id] :
-        arg extends ComplexIdRestModel<any, infer S, infer Id> ? never :
-        arg extends SchemaClass<infer RealType, infer d, any> ? RealType : CommonFieldType<arg>
-    )
-type FullPopulatedType<T extends Item> = Uniform<keyof T extends never ? {} : {
-    -readonly [P in Exclude<keyof T, OptionalFields<T>>]: FullPopulatedTypeField<T[P]>
-} & {
-        -readonly [P in Exclude<keyof T, RequiredFields<T>>]?: FullPopulatedTypeField<T[P]>
-    }>
-type PopulatedType<T extends Item> = Uniform<keyof T extends never ? {} : {
-    -readonly [P in Exclude<keyof T, OptionalFields<T>>]: PopulatedTypeField<T[P]>
-} & {
-        -readonly [P in Exclude<keyof T, RequiredFields<T>>]?: PopulatedTypeField<T[P]>
-    }>
-type RealType<T extends Item> = Uniform<keyof T extends never ? {} : {
-    -readonly [P in Exclude<keyof T, OptionalFields<T>>]: RealTypeField<T[P]>
-} & {
-        -readonly [P in Exclude<keyof T, RequiredFields<T>>]?: RealTypeField<T[P]>
-    }>
+export function filterNulls<T, Q = T | null>(array: Q[]): T[] {
+    return array.filter(el => el !== null) as any
+}

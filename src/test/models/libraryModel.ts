@@ -1,5 +1,4 @@
 import { Model, ModelType, PopulatedModelType, FullPopulatedModelType, Schema, required } from '../../..'
-import { } from '@rest-api/redux'
 const librarySchema = Schema({
     id: {
         type: Number,

@@ -29,7 +29,7 @@ describe('getSubModelWithKey', () => {
             <LibraryComponentGetById />
         </Provider>);
         setTimeout(() => {
-            const linkElement = getByText(/pepita/i);
+            getByText(/pepita/i);
             d()
         }, 80)
     });
@@ -56,7 +56,7 @@ describe('getSubModelWithKey', () => {
             <LibraryComponentGetByIdPopulated />
         </Provider>);
         setTimeout(() => {
-            const linkElement = getByText(/pepita/i);
+            getByText(/pepita/i);
             d()
         }, 80)
     });

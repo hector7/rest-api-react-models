@@ -27,7 +27,7 @@ test('useGet works', (d) => {
         <LibraryComponentGet />
     </Provider>);
     setTimeout(() => {
-        const linkElement = getByText(/book/i);
+        getByText(/book/i);
         d()
     }, 60)
 });
@@ -53,7 +53,7 @@ test('useGetById works', (d) => {
         <LibraryComponentGetById />
     </Provider>);
     setTimeout(() => {
-        const linkElement = getByText(/book/i);
+        getByText(/book/i);
         d()
     }, 60)
 });
@@ -84,7 +84,7 @@ test('useGetPopulated works', (d) => {
         <LibraryComponentGetPopulated />
     </Provider>);
     setTimeout(() => {
-        const linkElement = getByText(/book/i);
+        getByText(/book/i);
         d()
     }, 60)
 });
@@ -112,7 +112,7 @@ test('useGetPopulatedById works', (d) => {
         <LibraryComponentGetByIdPopulated />
     </Provider>);
     setTimeout(() => {
-        const linkElement = getByText(/book/i);
+        getByText(/book/i);
         d()
     }, 60)
 });

@@ -26,5 +26,5 @@ test('simple useGet', () => {
     const { getByText } = render(<Provider>
         <LibraryComponentGet />
     </Provider>);
-    const linkElement = getByText(/olivia/i);
+    getByText(/olivia/i);
 });

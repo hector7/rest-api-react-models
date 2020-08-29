@@ -28,7 +28,7 @@ describe('getSearchSubmodel', () => {
             <LibraryComponentGet />
         </Provider>);
         setTimeout(() => {
-            const linkElement = getByText(/pepita/i);
+            getByText(/pepita/i);
             d()
         }, 60)
     });
@@ -60,7 +60,7 @@ describe('getSearchSubmodel', () => {
             <LibraryComponentGetPopulated />
         </Provider>);
         setTimeout(() => {
-            const linkElement = getByText(/book/i);
+            getByText(/book/i);
             d()
         }, 60)
     });

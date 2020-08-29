@@ -7,7 +7,7 @@
     "prepublishOnly": "npm run clear && tsc",
     "clear": "find . -not -path \"./node_modules*\" -name \"*.d.ts\" -type f -delete && find . -not -path \"./node_modules*\" -not -path \"./config*\" -not -path \"./scripts*\" -name \"*.js\" -type f -delete && find . -not -path \"./node_modules*\" -name \"*.js.map\" -type f -delete",
     "pretest": "npm run clear",
-    "test": "node scripts/test.js",
+    "test": "node scripts/test.ts",
     "watch": "mocha-typescript-watch"
   },
   "repository": {
@@ -48,8 +48,10 @@
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
     "@types/jest": "^25.2.3",
+    "@types/jest-expect-message": "^1.0.2",
     "@types/node": "^12.12.7",
     "@types/react-redux": "^7.1.9",
+    "@types/redux-thunk": "^2.1.0",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
     "babel-eslint": "10.1.0",
@@ -78,6 +80,7 @@
     "identity-obj-proxy": "3.0.0",
     "jest": "24.9.0",
     "jest-environment-jsdom-fourteen": "1.0.1",
+    "jest-expect-message": "^1.0.2",
     "jest-junit": "^10.0.0",
     "jest-resolve": "24.9.0",
     "jest-watch-typeahead": "0.4.2",
@@ -110,9 +113,9 @@
     "xmlhttprequest": "^1.8.0"
   },
   "dependencies": {
-    "@rest-api/redux": "^2.1.0",
     "react-redux": "^7.2.0",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0"
   },
   "peerDependencies": {
     "react": "^16.13.1",
