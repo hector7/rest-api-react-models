@@ -5,6 +5,7 @@ import BasicSearchRestModel from './BasicSearchRestModel'
 import BasicIdRestModel from "./BasicIdRestModel"
 import ComplexIdRestModel from "../ComplexIdRestModel"
 import ComplexSearchRestModel from "../ComplexSearchRestModel"
+import { useDispatch } from "../../../.."
 
 type DynamicUrl = () => string
 interface DeleteFieldsType<S extends Schema<any>,
@@ -131,5 +132,26 @@ export default class BasicRestModel<S extends Schema<any> = any,
      */
     get useGetByIdPopulated() {
         return this.basicIdRestModel.useGetByIdPopulated.bind(this.basicIdRestModel)
+    }
+
+    /**
+     * Used to change model: post, put, patch and delete
+     */
+    get useModificators() {
+        const dispatch = useDispatch()
+        const actionPost = this.basicIdRestModel._actions.post.bind(this.basicIdRestModel._actions)
+        const actionPut = this.basicIdRestModel._actions.put.bind(this.basicIdRestModel._actions)
+        const actionPatch = this.basicIdRestModel._actions.patch.bind(this.basicIdRestModel._actions)
+        const actionDelete = this.basicIdRestModel._actions.delete.bind(this.basicIdRestModel._actions)
+        const post: typeof actionPost = (item, callback) => dispatch(actionPost(item, callback))
+        const put: typeof actionPut = (id, item, callback) => dispatch(actionPut(id, item, callback))
+        const patch: typeof actionPatch = (id, item, callback) => dispatch(actionPatch(id, item, callback))
+        const remove: typeof actionDelete = (item, callback) => dispatch(actionDelete(item, callback))
+        return {
+            post,
+            put,
+            patch,
+            delete: remove
+        }
     }
 }
