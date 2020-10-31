@@ -47,10 +47,10 @@ export default class ComplexSearchRestModel<OptType = any,
     }
     public useGet(opts: OptType, queryString?: string | URLSearchParams) {
         type Result = UseGetResult<S["RealType"], MetaData> & { state: ReducerType }
-        const [result, setResult] = React.useState<Omit<Result, 'redirect'>>({ error: null, metadata: null, initialized: false, invalidated: true, loading: false, items: [], state: {} })
-        const redirect = this.useInvalidate(opts, queryString?.toString())
-        const state = useSelector<ReducerType, Omit<Result, 'redirect'>>(state => {
-            const resultState: Omit<UseGetResult<S["RealType"], MetaData>, 'redirect'> & { state: ReducerType } = {
+        const [result, setResult] = React.useState<Omit<Result, 'reload'>>({ error: null, metadata: null, initialized: false, invalidated: true, loading: false, items: [], state: {} })
+        const reload = this.useInvalidate(opts, queryString?.toString())
+        const state = useSelector<ReducerType, Omit<Result, 'reload'>>(state => {
+            const resultState: Omit<UseGetResult<S["RealType"], MetaData>, 'reload'> & { state: ReducerType } = {
                 state,
                 items: this._reducer.get(opts, state, queryString?.toString()),
                 metadata: this._reducer.getMetadata(opts, state, queryString?.toString()),
@@ -72,7 +72,7 @@ export default class ComplexSearchRestModel<OptType = any,
             })) setResult(state)
         })
         const { state: currentSate, ...other } = state
-        return { ...other, redirect }
+        return { ...other, reload }
     }
 
     public useFetchPopulatedIfNeeded(opts: OptType, queryString?: string | URLSearchParams) {
@@ -83,7 +83,7 @@ export default class ComplexSearchRestModel<OptType = any,
     }
 
     public useGetPopulated(opts: OptType, queryString?: string | URLSearchParams) {
-        const redirect = this.useInvalidate(opts, queryString?.toString())
+        const reload = this.useInvalidate(opts, queryString?.toString())
         type Result = UseGetPopulatedResult<S["PopulatedType"], S["FullPopulatedType"], MetaData> & { state: ReducerType }
         const [result, setResult] = React.useState<Result>({ error: null, initialized: false, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: {} })
         const state = useSelector<ReducerType, Result>(state => {
@@ -114,6 +114,6 @@ export default class ComplexSearchRestModel<OptType = any,
             })) setResult(state)
         })
         const { state: currentSate, ...other } = state
-        return { ...other, redirect }
+        return { ...other, reload }
     }
 }

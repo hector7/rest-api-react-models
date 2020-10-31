@@ -5,7 +5,8 @@ import BasicSearchRestModel from './BasicSearchRestModel'
 import BasicIdRestModel from "./BasicIdRestModel"
 import ComplexIdRestModel from "../ComplexIdRestModel"
 import ComplexSearchRestModel from "../ComplexSearchRestModel"
-import { useDispatch } from "../../../.."
+import { useDispatch, useSelector } from "../../../.."
+import { ReducerType } from "../../ReducerStorage"
 
 type DynamicUrl = () => string
 interface DeleteFieldsType<S extends Schema<any>,
@@ -84,25 +85,61 @@ export default class BasicRestModel<S extends Schema<any> = any,
     /**
      * Hook used to fetch if needed to "/" path of model
      */
-    get useFetchIfNeeded() {
+    useFetchIfNeeded() {
         return this.basicSearchRestModel.useFetchIfNeeded.bind(this.basicSearchRestModel)
+    }
+    /**
+     * Hook used to get data (without fetch if needed). Not optimal. Refresh on every change of model.
+     */
+    useSelectorGet() {
+        const state: any = useSelector<ReducerType>(state => this.basicSearchRestModel._reducer.getReducer(state))
+        return (queryString?: string) => {
+            return this.basicSearchRestModel._reducer.get(state, queryString)
+        }
     }
     /**
      * Hook used to fetch and fetch submodels with idOnly if needed to "/" path of model
      */
-    get useFetchPopulatedIfNeeded() {
+    useFetchPopulatedIfNeeded() {
         return this.basicSearchRestModel.useFetchPopulatedIfNeeded.bind(this.basicSearchRestModel)
+    }
+    /**
+     * Hook used to get populated data (without fetch if needed). Not optimal. Refresh on every change of model.
+     */
+    useSelectorGetPopulated() {
+        const state: any = useSelector<ReducerType>(state => this.basicSearchRestModel._reducer.getReducer(state))
+        return (queryString?: string) => {
+            return this.basicSearchRestModel._reducer.getPopulated(state, queryString)
+        }
+    }
+    /**
+     * Hook used to get id data (without fetch if needed). Not optimal. Refresh on every change of model.
+     */
+    useSelectorGetById() {
+        const state: any = useSelector<ReducerType>(state => this.basicSearchRestModel._reducer.getReducer(state))
+        return (id: S["RealType"][IdKey]) => {
+            return this.basicIdRestModel._reducer.getByIdPopulated(state, id)
+        }
     }
     /**
      * Hook used to fetch if needed to "/:id" path of model
      */
-    get useFetchByIdIfNeeded() {
+    useFetchByIdIfNeeded() {
         return this.basicIdRestModel.useFetchByIdIfNeeded.bind(this.basicIdRestModel)
+    }
+    /**
+     * Hook used to get populated id data (without fetch if needed). Not optimal. Refresh on every change of model.
+     */
+    useSelectorGetByIdPopulated() {
+        const state: any = useSelector<ReducerType>(state => this.basicSearchRestModel._reducer.getReducer(state))
+        return (id: S["RealType"][IdKey]) => {
+            return this.basicIdRestModel._reducer.getByIdPopulated(state, id)
+        }
     }
     /**
      * Hook used to fetch and fetch submodels with idOnly if needed to "/:id" path of model
      */
-    get useFetchByIdPopulatedIfNeeded() {
+    useFetchByIdPopulatedIfNeeded() {
         return this.basicIdRestModel.useFetchByIdPopulatedIfNeeded.bind(this.basicIdRestModel)
     }
     /**
@@ -112,6 +149,14 @@ export default class BasicRestModel<S extends Schema<any> = any,
     get useGet() {
         return this.basicSearchRestModel.useGet.bind(this.basicSearchRestModel)
     }
+
+    /**
+     * Uset to invalidate all requests
+     */
+    get useInvalidateAll() {
+        return this.basicIdRestModel.useInvalidateAll.bind(this.basicIdRestModel)
+    }
+
     /**
      * Hook used to get the result populated (populating models with idOnly if there are) if there are from path "/". 
      * Internally use the hook useFetchPopulatedIfNeeded with the querystring provided.
@@ -137,7 +182,7 @@ export default class BasicRestModel<S extends Schema<any> = any,
     /**
      * Used to change model: post, put, patch and delete
      */
-    get useModificators() {
+    useModificators() {
         const dispatch = useDispatch()
         const actionPost = this.basicIdRestModel._actions.post.bind(this.basicIdRestModel._actions)
         const actionPut = this.basicIdRestModel._actions.put.bind(this.basicIdRestModel._actions)
@@ -151,7 +196,35 @@ export default class BasicRestModel<S extends Schema<any> = any,
             post,
             put,
             patch,
-            delete: remove
+            remove
         }
+    }
+    /**
+     * Used to post a entry model
+     */
+    usePost() {
+        const { post } = this.useModificators()
+        return post
+    }
+    /**
+     * Used to put a entry model
+     */
+    usePut() {
+        const { put } = this.useModificators()
+        return put
+    }
+    /**
+     * Used to patch a entry model
+     */
+    usePatch() {
+        const { patch } = this.useModificators()
+        return patch
+    }
+    /**
+     * Used to delete a entry model
+     */
+    useDelete() {
+        const { remove } = this.useModificators()
+        return remove
     }
 }

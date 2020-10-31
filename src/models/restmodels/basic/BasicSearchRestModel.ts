@@ -15,7 +15,7 @@ export type UseGetResult<Item, MetaData> = {
     invalidated: boolean;
     error: HttpError | null;
     metadata: MetaData | null;
-    redirect: () => void;
+    reload: () => void;
 }
 
 export type UseGetPopulatedResult<PartialItem, PopulatedItem, MetaData> = {
@@ -68,10 +68,10 @@ export default class BasicSearchRestModel<S extends Schema<any> = any,
     }
     public useGet(queryString?: string | URLSearchParams) {
         type Result = UseGetResult<S["RealType"], MetaData> & { state: ReducerType }
-        const [result, setResult] = React.useState<Omit<Result, 'redirect'>>({ error: null, metadata: null, initialized: false, invalidated: true, loading: false, items: [], state: {} })
-        const redirect = this.useInvalidate(queryString?.toString())
-        const state = useSelector<ReducerType, Omit<Result, 'redirect'>>(state => {
-            const resultState: Omit<UseGetResult<S["RealType"], MetaData>, 'redirect'> & { state: ReducerType } = {
+        const [result, setResult] = React.useState<Omit<Result, 'reload'>>({ error: null, metadata: null, initialized: false, invalidated: true, loading: false, items: [], state: {} })
+        const reload = this.useInvalidate(queryString?.toString())
+        const state = useSelector<ReducerType, Omit<Result, 'reload'>>(state => {
+            const resultState: Omit<UseGetResult<S["RealType"], MetaData>, 'reload'> & { state: ReducerType } = {
                 state,
                 items: this._reducer.get(state, queryString?.toString()),
                 metadata: this._reducer.getMetadata(state, queryString?.toString()),
@@ -93,7 +93,7 @@ export default class BasicSearchRestModel<S extends Schema<any> = any,
             })) setResult(state)
         })
         const { state: currentSate, ...other } = state
-        return { ...other, redirect }
+        return { ...other, reload }
     }
 
     public useFetchPopulatedIfNeeded(queryString?: string | URLSearchParams) {
@@ -105,7 +105,7 @@ export default class BasicSearchRestModel<S extends Schema<any> = any,
 
     public useGetPopulated(queryString?: string | URLSearchParams) {
         type Result = UseGetPopulatedResult<S["PopulatedType"], S["FullPopulatedType"], MetaData> & { state: ReducerType }
-        const redirect = this.useInvalidate(queryString?.toString())
+        const reload = this.useInvalidate(queryString?.toString())
         const [result, setResult] = React.useState<Result>({ error: null, initialized: false, metadata: null, populated: false, invalidated: true, loading: false, items: [], state: {} })
         const state = useSelector<ReducerType, Result>(state => {
             const resultState: UseGetPopulatedResult<S["PopulatedType"], S["FullPopulatedType"], MetaData> & { state: ReducerType } = {
@@ -135,6 +135,6 @@ export default class BasicSearchRestModel<S extends Schema<any> = any,
             })) setResult(state)
         })
         const { state: currentSate, ...other } = state
-        return { ...other, redirect }
+        return { ...other, reload }
     }
 }

@@ -14,7 +14,7 @@ export default class BasicSearchReducer<
         this.restModel = restModel
         this.url = url
     }
-    private getReducer(state: ReducerType): RestApiReducerType<S['RealType'], MetaData, IdKey> {
+    public getReducer(state: ReducerType): RestApiReducerType<S['RealType'], MetaData, IdKey> {
         const res = Object.assign(<RestApiReducerType<S['RealType'], any, IdKey>>{ searchs: {}, derived: {}, ids: {} }, state[this.restModel.model.name])
         return Object.assign({}, res, {
             ids: Object.assign({}, res.ids, {

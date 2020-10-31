@@ -128,9 +128,11 @@ export default class ReducerStorage {
                                 didInvalidate: true
                             })
                         case 'REMOVE_ID':
-                            const { [action.id]: idRemoved, ...otherIds } = state.ids
+                            const { [action.id]: idRemoved, ...otherIds } = state.ids[action.idKey]
                             return Object.assign({}, state, {
-                                ids: Object.assign({}, otherIds)
+                                ids: Object.assign({}, state.ids, {
+                                    [action.idKey]: Object.assign({}, otherIds)
+                                })
                             })
                         case 'RECEIVE_ID':
                             return storeItem(state, action.data, this.reducers[modelName].ids, new Date())
