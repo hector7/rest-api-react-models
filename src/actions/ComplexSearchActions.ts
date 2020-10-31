@@ -31,13 +31,14 @@ export default class ComplexSearchActions<Opts,
             return this.restModel.trailingSlash ? `${this.url(opts)}/${options.id}/` : `${this.url(opts)}/${options.id}`
         }
         if (options.queryString) {
-            return this.restModel.trailingSlash ? `${this.url(opts)}/?${options.queryString}` : `${this.url(opts)}?${options.queryString}`
+            const queryString = options.queryString && options.queryString.startsWith('?') ? options.queryString.slice(1) : options.queryString
+            return this.restModel.trailingSlash ? `${this.url(opts)}/?${queryString}` : `${this.url(opts)}?${queryString}`
         }
         return this.restModel.trailingSlash ? `${this.url(opts)}/` : this.url(opts)
     }
     get(opts: Opts, queryString: string, callback?: Callback<{ items: S['RealType'][], metadata: MetaData }, HttpError>): any {
         const actions = this.actions
-        return (dispatch: Dispatch<ActionUnion<typeof actions>>) => {
+        return (dispatch: Dispatch<ActionUnion<typeof actions>>, getState: () => ReducerType) => {
             const uri = this.getUri(opts, { queryString })
             if (callback) this.queue[uri].push(callback)
             dispatch(this.actions.request(opts, queryString))
@@ -47,11 +48,13 @@ export default class ComplexSearchActions<Opts,
                     const res = JSON.parse(xhttp.responseText)
                     // add array validation to schema.
                     if (this.restModel.validateFetch(res)) {
+                        const state = getState()
                         dispatch(this.actions.receive(opts, queryString, <GetItem>res))
                         try {
                             let cb
                             const response = {
-                                items: this.restModel.getItems(res),
+                                items: this.restModel.getItems(res)
+                                    .map(r => this.restModel.model.schema._useUpdatedSteps(state, r)),
                                 metadata: this.restModel.getMetaData(res)
                             }
                             while ((cb = this.queue[uri].shift()) !== undefined) {
@@ -66,7 +69,9 @@ export default class ComplexSearchActions<Opts,
                             }
                         }
                     } else {
-                        throw (new Error(`Response text from "${this.getUri(opts, { queryString })}" is not valid (Schema definition is invalid or bad implementation.)`))
+                        console.error(JSON.stringify(this.restModel.model.schema.getValidateArrayError(res), null, 2))
+                        throw (new Error(`Response text from "${this.getUri(opts, { queryString })}" is not valid (Schema definition is invalid or bad implementation). 
+                                        Check console for details.`))
                     }
                 } else if (xhttp.readyState === 4) {
                     if (IGNORED_STATUS.indexOf(xhttp.status) > -1) {

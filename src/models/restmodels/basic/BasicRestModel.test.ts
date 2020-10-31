@@ -35,6 +35,188 @@ describe('IT', () => {
             expect(called, 'this not will be called').toBe(false)
         }
     })
+    it('validate fails', () => {
+        global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
+            send() {
+                this.respond(200, {}, JSON.stringify({ id: 1, date: '' }))
+            }
+        }
+        const s = Schema({
+            id: { required: true, type: Number },
+            date: { required: true, type: Number }
+        }).updateField('date', date => new Date(date));
+        const ss = new Model(s, 'id', '/api/rest')
+
+        const root = createStore(ReducerStorage.generalReducer, {}, applyMiddleware(thunkMiddleware))
+        root.dispatch(ss._actions.fetchByIdIfNeeded(1))
+        const obj = ss._reducer.getById(root.getState(), 1)
+        expect(obj).toBe(null)
+        expect(ss._reducer.getIdError(root.getState(), 1)).not.toBe(null)
+    })
+    it('Invalidate by id works', () => {
+        global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
+            send() {
+                this.respond(200, {}, JSON.stringify({ id: 1, date: 1 }))
+            }
+        }
+        const s = Schema({
+            id: { required: true, type: Number },
+            date: { required: true, type: Number }
+        }).updateField('date', date => new Date(date));
+        const ss = new Model(s, 'id', '/api/rest')
+
+        const root = createStore(ReducerStorage.generalReducer, {}, applyMiddleware(thunkMiddleware))
+        expect(ss._reducer.isIdInvalidated(root.getState(), 1)).toBeTruthy()
+        root.dispatch(ss._actions.fetchByIdIfNeeded(1))
+        expect(ss._reducer.isIdInvalidated(root.getState(), 1)).toBeFalsy()
+        root.dispatch(ss._actions.invalidateById(1))
+        expect(ss._reducer.isIdInvalidated(root.getState(), 1)).toBeTruthy()
+    })
+    it('post works', () => {
+        global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
+            method: 'POST' | 'GET' = 'GET'
+            open(...args: any[]) {
+                super.open(...args as [any, any])
+                this.method = args[0]
+            }
+            send() {
+                switch (this.method) {
+                    case 'GET': return this.respond(200, {}, JSON.stringify([{ id: 1, date: 2 }]))
+                    case 'POST': return this.respond(200, {}, JSON.stringify({ id: 2, date: 2 }))
+                }
+            }
+        }
+        const s = Schema({
+            id: { required: true, type: Number },
+            date: { required: true, type: Number }
+        }).updateField('date', date => new Date(date));
+        const ss = new Model(s, 'id', '/api/rest')
+
+        const root = createStore(ReducerStorage.generalReducer, {}, applyMiddleware(thunkMiddleware))
+        root.dispatch(ss._actions.fetchIfNeeded())
+        expect(ss._reducer.isInvalidated(root.getState())).toBeFalsy()
+        root.dispatch(ss._actions.post({ date: new Date() }, () => { }))
+        expect(ss._reducer.getById(root.getState(), 2)).not.toBe(null)
+        expect(ss._reducer.isInvalidated(root.getState())).toBeTruthy()
+    })
+    it('put works', () => {
+        global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
+            method: 'PUT' | 'GET' = 'GET'
+            open(...args: any[]) {
+                super.open(...args as [any, any])
+                this.method = args[0]
+            }
+            send() {
+                switch (this.method) {
+                    case 'GET': return this.respond(200, {}, JSON.stringify([{ id: 1, date: 2 }]))
+                    case 'PUT': return this.respond(200, {}, JSON.stringify({ id: 1, date: 2 }))
+                }
+            }
+        }
+        const s = Schema({
+            id: { required: true, type: Number },
+            date: { required: true, type: Number }
+        }).updateField('date', date => new Date(date));
+        const ss = new Model(s, 'id', '/api/rest')
+
+        const root = createStore(ReducerStorage.generalReducer, {}, applyMiddleware(thunkMiddleware))
+        root.dispatch(ss._actions.fetchIfNeeded())
+        expect(ss._reducer.isInvalidated(root.getState())).toBeFalsy()
+        expect(ss._reducer.getById(root.getState(), 1)).not.toBe(null)
+        root.dispatch(ss._actions.put(1, { id: 1, date: new Date() }, () => { }))
+        expect(ss._reducer.getById(root.getState(), 1)).not.toBe(null)
+        expect(ss._reducer.isInvalidated(root.getState())).toBeTruthy()
+    })
+    it('patch works', () => {
+        global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
+            method: 'PATCH' | 'GET' = 'GET'
+            open(...args: any[]) {
+                super.open(...args as [any, any])
+                this.method = args[0]
+            }
+            send() {
+                switch (this.method) {
+                    case 'GET': return this.respond(200, {}, JSON.stringify([{ id: 1, date: 2 }]))
+                    case 'PATCH': return this.respond(200, {}, JSON.stringify({ id: 1, date: 2 }))
+                }
+            }
+        }
+        const s = Schema({
+            id: { required: true, type: Number },
+            date: { required: true, type: Number }
+        }).updateField('date', date => new Date(date));
+        const ss = new Model(s, 'id', '/api/rest')
+
+        const root = createStore(ReducerStorage.generalReducer, {}, applyMiddleware(thunkMiddleware))
+        root.dispatch(ss._actions.fetchIfNeeded())
+        expect(ss._reducer.isInvalidated(root.getState())).toBeFalsy()
+        expect(ss._reducer.getById(root.getState(), 1)).not.toBe(null)
+        root.dispatch(ss._actions.patch(1, { id: 1, date: new Date() }, () => { }))
+        expect(ss._reducer.getById(root.getState(), 1)).not.toBe(null)
+        expect(ss._reducer.isInvalidated(root.getState())).toBeTruthy()
+    })
+    it('delete works', (d) => {
+        global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
+            method: 'DELETE' | 'GET' = 'GET'
+            open(...args: any[]) {
+                super.open(...args as [any, any])
+                this.method = args[0]
+            }
+            send() {
+                switch (this.method) {
+                    case 'GET': return this.respond(200, {}, JSON.stringify([{ id: 1, date: 2 }]))
+                    case 'DELETE': return this.respond(200, {}, JSON.stringify({ id: 1, date: 2 }))
+                }
+            }
+        }
+        const s = Schema({
+            id: { required: true, type: Number },
+            date: { required: true, type: Number }
+        }).updateField('date', date => new Date(date));
+        const ss = new Model(s, 'id', '/api/rest')
+
+        const root = createStore(ReducerStorage.generalReducer, {}, applyMiddleware(thunkMiddleware))
+        root.dispatch(ss._actions.fetchIfNeeded())
+        expect(ss._reducer.isInvalidated(root.getState())).toBeFalsy()
+        expect(ss._reducer.getById(root.getState(), 1)).not.toBe(null)
+        root.dispatch(ss._actions.delete({ id: 1, date: new Date() }, (err) => {
+            if(err) d(err)
+            expect(ss._reducer.getById(root.getState(), 1)).toBe(null)
+            expect(ss._reducer.isInvalidated(root.getState())).toBeTruthy()
+            d()
+         }))
+    })
+    it('fetch get the correct data from a identifier with updateSteps', () => {
+        global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
+            send() {
+                this.respond(200, {}, JSON.stringify({ id: 1, date: new Date().getTime() }))
+            }
+        }
+        const s = Schema({
+            id: { required: true, type: Number },
+            date: { required: true, type: Number }
+        }).updateField('date', date => new Date(date));
+        const ss = new Model(s, 'id', '/api/rest')
+
+        const root = createStore(ReducerStorage.generalReducer, {}, applyMiddleware(thunkMiddleware))
+        root.dispatch(ss._actions.fetchByIdIfNeeded(1))
+        const obj = ss._reducer.getById(root.getState(), 1)
+        expect(obj).not.toBe(null)
+        if (obj !== null) {
+            expect(obj.hasOwnProperty('id')).toBeTruthy()
+            expect(obj.hasOwnProperty('date')).toBeTruthy()
+            expect(obj.date.constructor).toBe(Date)
+            expect(obj.id).toBe(1)
+            let called = false
+            global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
+                send() {
+                    called = true
+                }
+            }
+            root.dispatch(ss._actions.fetchByIdIfNeeded(1))
+            expect(called, 'this not will be called').toBe(false)
+        }
+    })
     it('fetch fails', () => {
         global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
             send() {
@@ -44,7 +226,7 @@ describe('IT', () => {
         const s = Schema({
             id: { required: true, type: Number, },
             name: [{ type: String, required: true }],
-            date: { type: Date, required: true },
+            date: { type: String, required: true },
             objectType: {
                 type: Schema({
                     hola: Number
@@ -64,9 +246,8 @@ describe('IT', () => {
                 }),
                 required: true
             }]
-        });
+        }).updateField('date', date => new Date(date));
         const ss = new Model(s, 'id', '/api/rest')
-
         const root = createStore(ReducerStorage.generalReducer, {}, applyMiddleware(thunkMiddleware))
         root.dispatch(ss._actions.fetchIfNeeded())
         const obj = ss._reducer.getError(root.getState())
@@ -85,7 +266,7 @@ describe('IT', () => {
         const s = Schema({
             id: { required: true, type: Number, },
             name: [{ type: String, required: true }],
-            date: { type: Date, required: true },
+            date: { type: String, required: true },
             objectType: {
                 type: Schema({
                     hola: Number
@@ -105,7 +286,7 @@ describe('IT', () => {
                 }),
                 required: true
             }]
-        });
+        }).updateField('date', date => new Date(date));
         const ss = new Model(s, 'id', '/api/rest')
 
         const root = createStore(ReducerStorage.generalReducer, {}, applyMiddleware(thunkMiddleware))

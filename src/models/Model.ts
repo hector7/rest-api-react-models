@@ -3,7 +3,7 @@ import ReducerStorage from './ReducerStorage'
 
 
 export default class Model<S extends Schema<any, any, any>>{
-    public readonly schema: S
+    public schema: S
     protected _reducerName: string
     constructor(schema: S) {
         this.schema = schema
@@ -14,11 +14,11 @@ export default class Model<S extends Schema<any, any, any>>{
         return this._reducerName
     }
 }
+/*
+Not used... used in a newar future
 export class ComplexModel<S extends Schema<any, any, any>,
     Opts> extends Model<S>{
-    /** @internal */
     protected readonly opts: Schema<Opts, any, any>
-    /** @internal */
     protected readonly getKey: (opts: Opts) => string
     constructor(schema: S, opts: Schema<Opts, any, any>, getKey: (optsItem: Opts) => string) {
         super(schema)
@@ -27,3 +27,4 @@ export class ComplexModel<S extends Schema<any, any, any>,
         this.opts = opts
     }
 }
+*/

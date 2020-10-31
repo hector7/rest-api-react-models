@@ -39,7 +39,7 @@ export default class ComplexIdActions<Opts,
     }
     private getById(opts: Opts, id: string | number, callback?: Callback<S['RealType'] | null, HttpError>): any {
         const actions = this.actions
-        return (dispatch: Dispatch<ActionUnion<typeof actions>>) => {
+        return (dispatch: Dispatch<ActionUnion<typeof actions>>, getState: () => ReducerType) => {
             const optKey = this.getUri(opts)
             if (callback) this.idQueue[optKey][id].push(callback)
             dispatch(actions.fetchByIdIfNeeded(opts, id))
@@ -49,14 +49,15 @@ export default class ComplexIdActions<Opts,
                     try {
                         const res = JSON.parse(xhttp.responseText)
                         if (this.restModel.validateItem(res)) {
-                            dispatch(actions.receiveById(opts, res))
+                            dispatch(actions.receiveById(opts, this.restModel.model.schema._useUpdatedSteps(getState(), res)))
                             let cb
                             while ((cb = this.idQueue[optKey][id].shift()) !== undefined) {
                                 cb(null, res)
                             }
                         } else {
-                            console.log('not validated')
-                            throw (new Error(`Response text from "${this.getIdUri(opts, id)}" is not valid (Schema definition is invalid or bad implementation.)`))
+                            console.error(this.restModel.model.schema.getValidateErrorPretty(res))
+                            throw (new Error(`Response text from "${this.getIdUri(opts, id)}" is not valid (Schema definition is invalid or bad implementation). 
+                                            Check console for details.`))
                         }
                     } catch (err) {
                         const error = new HttpError(500, err.message)

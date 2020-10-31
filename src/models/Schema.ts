@@ -5,23 +5,22 @@ import { ReducerType } from "./ReducerStorage";
 
 
 export type StringOrNumberKeys<T> = { [P in keyof T]: T[P] extends (string | number) ? P : never }[keyof T];
-export type Uniform<T extends { [K: string]: any }> = { [K in keyof T]: T[K] }
 export type Item = {
     [key: string]: ItemFieldType
 };
 type RequiredFields<T extends Item> = { [P in keyof T]: T[P] extends { type: any, required: true } ? P : T[P] extends [{ type: any, required: true }] ? P : never }[keyof T];
 type OptionalFields<T extends Item> = { [P in keyof T]: T[P] extends { type: any, required: true } ? never : T[P] extends [{ type: any, required: true }] ? never : P }[keyof T];
-
+type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 export type ItemFieldWithParams<T> = { type: T, required?: true | false, nullable?: true | false }
-export type ModelItemFieldWithParams = { type: RestModel<any, any, any, any, any>, required?: true | false, nullable?: true | false, idOnly?: true | false }
-export type ItemFieldType = ItemFieldBasicType | [ItemFieldBasicType] | ModelItemFieldWithParams | [ModelItemFieldWithParams] | ItemFieldWithParams<ItemFieldBasicType> | [ItemFieldWithParams<ItemFieldBasicType>] | ItemFieldWithParams<ItemFieldBasicType>[]
-export type ItemFieldBasicType = StringConstructor | BooleanConstructor | NumberConstructor | DateConstructor | Schema<any, any, any> | RestModel<any, any, any, any, any>
-export type IdPopulatedType<PopulatedType, IdKey extends keyof PopulatedType> = Uniform<Record<IdKey, PopulatedType[IdKey]> & Partial<PopulatedType>>
+export type ModelItemFieldWithParams = { type: RestModel<any>, required?: true | false, nullable?: true | false, idOnly?: true | false }
+export type ItemFieldType<T = false> = ItemFieldBasicType<T> | [ItemFieldBasicType<T>] | ModelItemFieldWithParams | [ModelItemFieldWithParams] | ItemFieldWithParams<ItemFieldBasicType> | [ItemFieldWithParams<ItemFieldBasicType<T>>] | ItemFieldWithParams<ItemFieldBasicType<T>>[]
+export type ItemFieldBasicType<T = false> = StringConstructor | BooleanConstructor | NumberConstructor | Schema<any> | RestModel<any> | (T extends true ? any : never)
+export type IdPopulatedType<PopulatedType, IdKey extends keyof PopulatedType> = { [f in IdKey]: PopulatedType[IdKey] } & Partial<PopulatedType>
 type CommonFieldType<arg> =
     arg extends StringConstructor ? string :
     arg extends BooleanConstructor ? boolean :
     arg extends NumberConstructor ? number :
-    arg extends DateConstructor ? Date : never
+    arg extends DateConstructor ? Date : arg
 export type PopulatedTypeField<arg extends Item['']> =
     arg extends { type: any, nullable: true } ? PopulatedArrayRealTypeField<arg> | null : PopulatedArrayRealTypeField<arg>
 type PopulatedArrayRealTypeField<arg> =
@@ -35,20 +34,20 @@ type GetPopulatedTypeField<arg> =
 type GetFullPopulatedTypeField<arg> =
     arg extends { type: infer c } ? GetBasicFullPopulatedTypeField<c> : GetBasicFullPopulatedTypeField<arg>
 type GetBasicFullPopulatedTypeField<arg> =
-    arg extends BasicRestModel<infer S, infer Id, any, any> ? S['FullPopulatedType'] :
+    arg extends BasicRestModel<infer S, infer Id> ? S['FullPopulatedType'] :
     arg extends BasicIdRestModel<infer S, infer Id> ? S['FullPopulatedType'] :
     arg extends Schema<any, any, infer FullPopulatedType> ? FullPopulatedType : CommonFieldType<arg>
 type GetBasicPopulatedTypeField<arg, idOnly = false> =
     idOnly extends true ? (
-        arg extends BasicRestModel<infer S, infer Id, any, any> ? S['PopulatedType'] :
+        arg extends BasicRestModel<infer S, infer Id> ? S['PopulatedType'] :
         arg extends BasicIdRestModel<infer S, infer Id> ? S['PopulatedType'] :
-        arg extends Schema<any, infer PopulatedType, any> ? PopulatedType : CommonFieldType<arg>
+        arg extends Schema<any, infer PopulatedType> ? PopulatedType : CommonFieldType<arg>
     ) : (
-        arg extends BasicRestModel<infer S, infer Id, any, any> ? IdPopulatedType<S['PopulatedType'], Id> :
+        arg extends BasicRestModel<infer S, infer Id> ? IdPopulatedType<S['PopulatedType'], Id> :
         arg extends BasicIdRestModel<infer S, infer Id> ? IdPopulatedType<S['PopulatedType'], Id> :
-        arg extends Schema<any, infer PopulatedType, any> ? PopulatedType : CommonFieldType<arg>
+        arg extends Schema<any, infer PopulatedType> ? PopulatedType : CommonFieldType<arg>
     )
-export type RealTypeField<arg extends Item['']> =
+export type RealTypeField<arg extends ItemFieldType<any>> =
     arg extends { type: any, nullable: true } ? ArrayRealTypeField<arg> | null : ArrayRealTypeField<arg>
 type ArrayRealTypeField<arg> =
     arg extends [infer c] ? GetRealTypeField<c>[] : GetRealTypeField<arg>
@@ -58,65 +57,73 @@ type GetRealTypeField<arg> =
     : GetBasicRealTypeField<arg>
 type GetBasicRealTypeField<arg, idOnly = false> =
     idOnly extends true ? (
-        arg extends BasicRestModel<infer S, infer Id, any, any> ? S['RealType'] :
+        arg extends BasicRestModel<infer S, infer Id> ? S['RealType'] :
         arg extends BasicIdRestModel<infer S, infer Id> ? S['RealType'] :
-        arg extends Schema<infer RealType, infer d, any> ? RealType : CommonFieldType<arg>
+        arg extends Schema<infer RealType, infer d> ? { [k in keyof RealType]: RealType[k] } : CommonFieldType<arg>
     ) : (
-        arg extends BasicRestModel<infer S, infer Id, any, any> ? S['RealType'][Id] :
+        arg extends BasicRestModel<infer S, infer Id> ? S['RealType'][Id] :
         arg extends BasicIdRestModel<infer S, infer Id> ? S['RealType'][Id] :
-        arg extends Schema<infer RealType, infer d, any> ? RealType : CommonFieldType<arg>
+        arg extends Schema<infer RealType, infer d> ? RealType : CommonFieldType<arg>
     )
-export type SchemaFullPopulatedType<T extends Item> = Uniform<keyof T extends never ? {} : {
-    -readonly [P in Exclude<keyof T, OptionalFields<T>>]: FullPopulatedTypeField<T[P]>
-} & {
-        -readonly [P in Exclude<keyof T, RequiredFields<T>>]?: FullPopulatedTypeField<T[P]>
-    }>
-export type SchemaPopulatedType<T extends Item> = Uniform<keyof T extends never ? {} : {
-    -readonly [P in Exclude<keyof T, OptionalFields<T>>]: PopulatedTypeField<T[P]>
-} & {
-        -readonly [P in Exclude<keyof T, RequiredFields<T>>]?: PopulatedTypeField<T[P]>
-    }>
-export type SchemaRealType<T extends Item> = Uniform<keyof T extends never ? {} : {
-    -readonly [P in Exclude<keyof T, OptionalFields<T>>]: RealTypeField<T[P]>
-} & {
-        -readonly [P in Exclude<keyof T, RequiredFields<T>>]?: RealTypeField<T[P]>
-    }>
+export type SchemaFullPopulatedType<T extends Item> = keyof T extends never ? {} : OptionalFields<T> extends never ? {
+    -readonly [P in keyof T]: FullPopulatedTypeField<T[P]>
+} : Optional<{
+    -readonly [P in keyof T]: FullPopulatedTypeField<T[P]>
+}, OptionalFields<T>>
+export type SchemaPopulatedType<T extends Item> = keyof T extends never ? {} : OptionalFields<T> extends never ? {
+    -readonly [P in keyof T]: PopulatedTypeField<T[P]>
+} : Optional<{
+    -readonly [P in keyof T]: PopulatedTypeField<T[P]>
+}, OptionalFields<T>>
+export type SchemaRealType<T extends Item> = keyof T extends never ? {} : OptionalFields<T> extends never ? {
+    -readonly [P in keyof T]: RealTypeField<T[P]>
+} : Optional<{
+    -readonly [P in keyof T]: RealTypeField<T[P]>
+}, OptionalFields<T>>
 function fieldIsExtendedFormat(property: ItemFieldType): property is ItemFieldWithParams<any> {
     return property.hasOwnProperty('type')
 }
 function isBasicModel(property: any): property is BasicIdRestModel {
     return property.constructor === BasicIdRestModel || property.constructor === BasicRestModel
 }
-export function fieldIsSchema(property: any): property is Schema<any, any, any> {
+export function fieldIsSchema(property: any): property is Schema<any> {
     return property && typeof property === 'object' && property.constructor === Schema
 }
-type DeleteFieldSchema<T> = {
+export type DeleteFieldSchema<T> = {
     0: T
 } & Array<T>
-interface DeleteFieldsType<RT extends object, PT extends object, FPT extends object> {
-    <K extends DeleteFieldSchema<keyof RT>>
+
+export type SchemaWithoutKeys<S extends Schema<any>, K extends DeleteFieldSchema<keyof S['RealType']>> = Schema<{
+    [K2 in Exclude<keyof S['RealType'], K[number]>]: S['RealType'][K2]
+}, {
+        [K2 in Exclude<keyof S['PopulatedType'], K[number]>]: S['PopulatedType'][K2]
+    }, {
+        [K2 in Exclude<keyof S['FullPopulatedType'], K[number]>]: S['FullPopulatedType'][K2]
+    }>
+interface DeleteFieldsType<S extends Schema<any>> {
+    <K extends DeleteFieldSchema<keyof S['RealType']>>
         (...keys: K): Schema<{
-            [K2 in Exclude<keyof RT, K[number]>]: RT[K2]
+            [K2 in Exclude<keyof S['RealType'], K[number]>]: S['RealType'][K2]
         }, {
-                [K2 in Exclude<keyof PT, K[number]>]: PT[K2]
+                [K2 in Exclude<keyof S['PopulatedType'], K[number]>]: S['PopulatedType'][K2]
             }, {
-                [K2 in Exclude<keyof FPT, K[number]>]: FPT[K2]
+                [K2 in Exclude<keyof S['FullPopulatedType'], K[number]>]: S['FullPopulatedType'][K2]
             }>
 }
 interface UpdateFieldsType<RT extends object, PT extends object, FPT extends object> {
     <I extends Item>(newSchema: I): Schema<{
-        [K2 in Exclude<keyof RT, keyof I>]: RT[K2]
-    } & SchemaRealType<I>, {
-        [K2 in Exclude<keyof PT, keyof I>]: PT[K2]
-    } & SchemaPopulatedType<I>, {
-        [K2 in Exclude<keyof FPT, keyof I>]: FPT[K2]
-    } & SchemaFullPopulatedType<I>>
+        [K2 in keyof RT | keyof I]: K2 extends keyof RT ? RT[K2] : K2 extends keyof I ? SchemaRealType<Pick<I, K2>>[keyof SchemaRealType<Pick<I, K2>>] : never
+    }, {
+            [K2 in keyof PT | keyof I]: K2 extends keyof PT ? PT[K2] : K2 extends keyof I ? SchemaPopulatedType<Pick<I, K2>>[keyof SchemaPopulatedType<Pick<I, K2>>] : never
+        }, {
+            [K2 in keyof FPT | keyof I]: K2 extends keyof FPT ? FPT[K2] : K2 extends keyof I ? SchemaFullPopulatedType<Pick<I, K2>>[keyof SchemaFullPopulatedType<Pick<I, K2>>] : never
+        }>
 }
-export class Schema<RealType extends { [key: string]: any }, PopulatedType extends { [key: string]: any } = any, FullPopulatedType extends { [key: string]: any } = any>{
+export class Schema<RealType extends { [key: string]: any } = any, PopulatedType extends { [key: string]: any } = any, FullPopulatedType extends { [key: string]: any } = any>{
     public readonly _schema: Item
-    public readonly _subSchema?: Schema<any, any, any>
+    public readonly _subSchema?: Schema<any>
     private functionToConvert?: { key: string, fx: (el: any) => any }
-    constructor(schema: Item, subSchema?: Schema<any, any, any>) {
+    constructor(schema: Item, subSchema?: Schema<any>) {
         this._schema = schema
         this._subSchema = subSchema
     }
@@ -141,7 +148,7 @@ export class Schema<RealType extends { [key: string]: any }, PopulatedType exten
         }
         return false
     }
-    protected fieldIsSchema(property: ItemFieldType): property is Schema<any, any, any> {
+    protected fieldIsSchema(property: ItemFieldType): property is Schema<any> {
         return fieldIsSchema(property)
     }
     private isItemFromProperty(item: any, property: ItemFieldType, nullable: boolean, idOnly: boolean = false): boolean {
@@ -155,6 +162,21 @@ export class Schema<RealType extends { [key: string]: any }, PopulatedType exten
             return nullable
         }
         return (item.constructor === property)
+    }
+    private getErrorFromItemProperty(item: any, property: ItemFieldType, nullable: boolean, idOnly: boolean = false): any {
+        if (this._fieldIsAnIdModel(property)) {
+            if (idOnly)
+                return this.getErrorFromItemProperty(item, property.idType, nullable)
+            return property.model.schema.getValidateError(item)
+        }
+        if (this.fieldIsSchema(property)) return property.getValidateError(item)
+        if (item === null && !nullable) {
+            return `Received null, not marked as nullable.`
+        }
+        if (item.constructor !== property) {
+            return `Received: \n  ${JSON.stringify(item, null, 2)}\nExpected:\n  ${(property as StringConstructor).name}`
+        }
+        throw new Error('Called getErrorFromItemProperty and not errors found.')
     }
     private get keys(): string[] {
         if (this._subSchema)
@@ -176,7 +198,7 @@ export class Schema<RealType extends { [key: string]: any }, PopulatedType exten
         }, new Schema(schema).deleteFields(...matchingKeys as any))
     }
 
-    public deleteFields: DeleteFieldsType<RealType, PopulatedType, FullPopulatedType> = (...fields) => {
+    public deleteFields: DeleteFieldsType<this> = (...fields) => {
         let schema = Object.assign({}, this._schema)
         fields.forEach(f => {
             const { [f]: toBeDelete, ...other } = schema
@@ -186,8 +208,19 @@ export class Schema<RealType extends { [key: string]: any }, PopulatedType exten
             return new Schema(schema, this._subSchema.deleteFields(...fields))
         return new Schema(schema)
     }
-    public updateField<Field extends keyof RealType, ReturnType extends ItemFieldType>(f: Field, newDef: ReturnType, fx: (value: RealType[Field]) => RealTypeField<ReturnType>) {
-        const schema = new Schema<Omit<RealType, Field> & { [f in Field]: ReturnType }, Omit<PopulatedType, Field> & { [f in Field]: ReturnType }, Omit<FullPopulatedType, Field> & { [f in Field]: ReturnType }>({ [f as string]: newDef }, this.deleteFields(f))
+    /**
+     * 
+     * @param f field to update
+     * @param fx function in order to convert the field
+     */
+    public updateField<Field extends keyof RealType, ReturnType>(f: Field, fx: (value: RealType[Field]) => ReturnType): Schema<{
+        [K2 in keyof RealType]: K2 extends Field ? ReturnType : RealType[K2]
+    }, {
+            [K2 in keyof PopulatedType]: K2 extends Field ? ReturnType : PopulatedType[K2]
+        }, {
+            [K2 in keyof FullPopulatedType]: K2 extends Field ? ReturnType : FullPopulatedType[K2]
+        }> {
+        const schema = new Schema({}, this)
         schema.functionToConvert = { key: f as string, fx }
         return schema
     }
@@ -348,6 +381,68 @@ export class Schema<RealType extends { [key: string]: any }, PopulatedType exten
         }
         if (this._subSchema) return this._subSchema.validate(str)
         return true
+    }
+    private getValidateError(str: any): any {
+        if (typeof str !== 'object') {
+            return `Expected Object, found:
+                ${JSON.stringify(str, null, 2)}`
+        }
+        let key: string
+        for (key in this._schema) {
+            // check arrays and required property.
+            const gField = this._schema[key]
+            const isArray = fieldIsExtendedFormat(gField) ? Array.isArray(gField.type) : Array.isArray(gField)
+            const field = Array.isArray(gField) ? gField[0] : gField
+            const type = fieldIsExtendedFormat(field) ? field.type : field
+            const required = fieldIsExtendedFormat(gField) && gField.required === true
+            const idOnly = this.fieldIsExtendedFormatWithModel(field) ? field.idOnly === true : false
+            const nullable = fieldIsExtendedFormat(field) ? field.nullable === true : false
+            if (required && !str.hasOwnProperty(key)) return { [key]: 'Marked as required, not found' }
+            if (str.hasOwnProperty(key)) {
+                if (isArray) {
+                    if (str[key] === null) {
+                        if (!nullable) {
+                            return { [key]: 'Received null, not marked as nullable' }
+                        }
+                    } else {
+                        if (!Array.isArray(str[key])) {
+                            return { [key]: 'Is not an array' }
+                        }
+                        for (let i = 0; i < str[key].length; i++) {
+                            if (!this.isItemFromProperty(str[key][i], type, nullable, idOnly))
+                                return { [key]: this.getErrorFromItemProperty(str[key][i], type, nullable, idOnly) }
+                        }
+                    }
+                } else {
+                    if (!this.isItemFromProperty(str[key], type, nullable, idOnly)) {
+                        return { [key]: this.getErrorFromItemProperty(str[key], type, nullable, idOnly) }
+                    }
+                }
+            }
+        }
+        if (this._subSchema) return this._subSchema.getValidateError(str)
+        throw new Error('Called getValidateError and not errors found. Check first errors with validate function.')
+    }
+    public getValidateErrorPretty(str: any) {
+        let error = this.getValidateError(str)
+        let keys: string[] = []
+        while (typeof error !== 'string') {
+            const k = Object.keys(error)[0]
+            keys.push(k)
+            error = error[k]
+        }
+        return `Validate error on path "${keys.join('.')}"\n${error}`
+    }
+    public getValidateArrayError(str: any): any {
+        if (Array.isArray(str)) {
+            for (let i = 0; i < str.length; i++) {
+                if (!this.validate(str[i]))
+                    return this.getValidateErrorPretty(str[i])
+            }
+            throw new Error('Called getValidateArrayError and not errors found. Check first errors with validateArray function.')
+        }
+        return `Expected Array, found:
+            ${JSON.stringify(str, null, 2)}`
     }
     public validateArray(str: any): str is RealType[] {
         if (process.env.NODE_ENV === 'production') return true

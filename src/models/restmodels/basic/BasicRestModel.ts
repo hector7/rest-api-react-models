@@ -1,11 +1,27 @@
 import { RestModel, RouteOpts, joinClassMethods } from "../index"
-import { Schema, StringOrNumberKeys } from "../../Schema"
+import { Schema, StringOrNumberKeys, DeleteFieldSchema, SchemaWithoutKeys } from "../../Schema"
 import BasicModel from "../../Model"
 import BasicSearchRestModel from './BasicSearchRestModel'
 import BasicIdRestModel from "./BasicIdRestModel"
 import ComplexIdRestModel from "../ComplexIdRestModel"
 import ComplexSearchRestModel from "../ComplexSearchRestModel"
+
 type DynamicUrl = () => string
+interface DeleteFieldsType<S extends Schema<any>,
+    IdKey extends string,
+    GetItem,
+    MetaData> {
+    <K extends DeleteFieldSchema<Exclude<keyof S["RealType"], IdKey>>>
+        (...keys: K):
+        BasicRestModel<Schema<{
+            [K2 in Exclude<keyof S['RealType'], K[number]>]: S['RealType'][K2]
+        }, {
+                [K2 in Exclude<keyof S['PopulatedType'], K[number]>]: S['PopulatedType'][K2]
+            }, {
+                [K2 in Exclude<keyof S['FullPopulatedType'], K[number]>]: S['FullPopulatedType'][K2]
+            }>, any, GetItem, MetaData>
+}
+
 export default class BasicRestModel<S extends Schema<any> = any,
     IdKey extends StringOrNumberKeys<S['RealType']> & StringOrNumberKeys<S['PopulatedType']> & string = any,
     GetItem = any,
@@ -30,6 +46,12 @@ export default class BasicRestModel<S extends Schema<any> = any,
         })
         this.basicIdRestModel = new BasicIdRestModel<S, IdKey>(this, args[1], this.getUrl)
         this.basicSearchRestModel = new BasicSearchRestModel<S, IdKey, GetItem, MetaData>(this.basicIdRestModel, this.getUrl)
+    }
+    hiddeFields: DeleteFieldsType<S, IdKey, GetItem, MetaData> = (...fields) => {
+        const schema = this.model.schema.deleteFields(...fields)
+        const model = Object.assign(BasicRestModel, this)
+        model.model.schema = schema as any
+        return model as any
     }
     getSubModelWithKey<
         k extends StringOrNumberKeys<S['RealType']> & StringOrNumberKeys<S['PopulatedType']> & string
@@ -58,28 +80,56 @@ export default class BasicRestModel<S extends Schema<any> = any,
     get _actions() {
         return joinClassMethods(this.basicIdRestModel._actions, this.basicSearchRestModel._actions)
     }
+    /**
+     * Hook used to fetch if needed to "/" path of model
+     */
     get useFetchIfNeeded() {
         return this.basicSearchRestModel.useFetchIfNeeded.bind(this.basicSearchRestModel)
     }
+    /**
+     * Hook used to fetch and fetch submodels with idOnly if needed to "/" path of model
+     */
     get useFetchPopulatedIfNeeded() {
         return this.basicSearchRestModel.useFetchPopulatedIfNeeded.bind(this.basicSearchRestModel)
     }
-    get useGet() {
-        return this.basicSearchRestModel.useGet.bind(this.basicSearchRestModel)
-    }
-    get useGetPopulated() {
-        return this.basicSearchRestModel.useGetPopulated.bind(this.basicSearchRestModel)
-    }
-    get useGetById() {
-        return this.basicIdRestModel.useGetById.bind(this.basicIdRestModel)
-    }
-    get useGetByIdPopulated() {
-        return this.basicIdRestModel.useGetByIdPopulated.bind(this.basicIdRestModel)
-    }
+    /**
+     * Hook used to fetch if needed to "/:id" path of model
+     */
     get useFetchByIdIfNeeded() {
         return this.basicIdRestModel.useFetchByIdIfNeeded.bind(this.basicIdRestModel)
     }
+    /**
+     * Hook used to fetch and fetch submodels with idOnly if needed to "/:id" path of model
+     */
     get useFetchByIdPopulatedIfNeeded() {
         return this.basicIdRestModel.useFetchByIdPopulatedIfNeeded.bind(this.basicIdRestModel)
+    }
+    /**
+     * Hook used to get the result if there are from path "/". 
+     * Internally use the hook useFetchIfNeeded with the querystring provided.
+     */
+    get useGet() {
+        return this.basicSearchRestModel.useGet.bind(this.basicSearchRestModel)
+    }
+    /**
+     * Hook used to get the result populated (populating models with idOnly if there are) if there are from path "/". 
+     * Internally use the hook useFetchPopulatedIfNeeded with the querystring provided.
+     */
+    get useGetPopulated() {
+        return this.basicSearchRestModel.useGetPopulated.bind(this.basicSearchRestModel)
+    }
+    /**
+     * Hook used to get the result if there are from path "/:id". 
+     * Internally use the hook useFetchByIdIfNeeded with the id provided.
+     */
+    get useGetById() {
+        return this.basicIdRestModel.useGetById.bind(this.basicIdRestModel)
+    }
+    /**
+     * Hook used to get the result if there are from path "/". 
+     * Internally use the hook useFetchByIdPopulatedIfNeeded with the id provided.
+     */
+    get useGetByIdPopulated() {
+        return this.basicIdRestModel.useGetByIdPopulated.bind(this.basicIdRestModel)
     }
 }

@@ -182,8 +182,3 @@ export function getIdRequest<Item>(state: RestApiReducerType<Item, any, any>, id
     }
     return INIT_REQUEST
 }
-
-
-export function provideFirstParam<Param, T extends any[], Q>(f: (arg: Param, ...args: T) => Q, param: Param): (...args: T) => Q {
-    return f.bind(f, param)
-}
