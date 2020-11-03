@@ -53,7 +53,7 @@ export default class BasicSearchRestModel<S extends Schema<any> = any,
         this._reducer = new BasicSearchReducer<S, IdKey, MetaData>(idModel, url)
         this._actions = new BasicSearchActions<S, IdKey, GetItem, MetaData>(idModel, url)
     }
-
+    
     public useInvalidate(queryString?: string | URLSearchParams) {
         return () => {
             const dispatch = useDispatch()
@@ -66,6 +66,7 @@ export default class BasicSearchRestModel<S extends Schema<any> = any,
             dispatch(this._actions.fetchIfNeeded(queryString?.toString()))
         })
     }
+    
     public useGet(queryString?: string | URLSearchParams) {
         type Result = UseGetResult<S["RealType"], MetaData> & { state: ReducerType }
         const [result, setResult] = React.useState<Omit<Result, 'reload'>>({ error: null, metadata: null, initialized: false, invalidated: true, loading: false, items: [], state: {} })

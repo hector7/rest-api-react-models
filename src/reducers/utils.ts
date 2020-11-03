@@ -159,6 +159,7 @@ export function storeItems<Item, MetaData, IdKey extends StringOrNumberKeys<Item
                                 isFetching: false,
                                 result: item,
                                 lastUpdated,
+                                didInvalidate: false,
                                 initialized: true
                             })
                     }
