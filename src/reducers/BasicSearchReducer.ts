@@ -1,8 +1,9 @@
 import { Schema, StringOrNumberKeys } from '../models/Schema'
-import { getResult, getError, isFetching, isInvalidated, isInitialized } from './utils'
+import { getResult, getError, isFetching, isInvalidated, isInitialized, getItems } from './utils'
 import BasicIdRestModel from '../models/restmodels/basic/BasicIdRestModel';
 import { UrlCallbackParam } from '../models/restmodels';
 import { ReducerType, RestApiReducerType } from '../models/ReducerStorage';
+import { filterNulls } from '../..';
 
 export default class BasicSearchReducer<
     S extends Schema<any>,
@@ -29,14 +30,14 @@ export default class BasicSearchReducer<
     }
     get(state: ReducerType, queryString: string = '') {
         const result = getResult(this.getReducer(state).searchs[this.getUrl(queryString)])
-        return result ? result.ids.map(id => this.restModel._reducer.getById(state, id)!) : []
+        return result ? result.ids.map(id => this.restModel._reducer.getById(state, id)!).filter(f => f !== null) : []
     }
     get getById() {
         return this.restModel._reducer.getById
     }
     getPopulated(state: ReducerType, queryString: string = '') {
         const result = getResult(this.getReducer(state).searchs[this.getUrl(queryString)])
-        return result ? Object.assign([], result.ids).map(id => this.restModel._reducer.getByIdPopulated(state, id)!) : []
+        return result ? Object.assign([], result.ids).map(id => this.restModel._reducer.getByIdPopulated(state, id)!).filter(f => f !== null) : []
     }
     isPopulated(state: ReducerType, queryString: string = '') {
         const items = this.get(state, queryString)

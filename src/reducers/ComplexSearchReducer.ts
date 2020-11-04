@@ -33,7 +33,7 @@ export default class ComplexSearchReducer<Opts,
 
     get(opts: Opts, state: ReducerType, queryString: string = '') {
         const result = getResult(this.getReducer(state).searchs[this.getUrl(opts, queryString)])
-        return result ? result.ids.map(id => this.getById(state, id)!) : []
+        return result ? result.ids.map(id => this.getById(state, id)!).filter(f => f !== null) : []
     }
     getPopulated(opts: Opts, state: ReducerType, queryString: string = '') {
         const items = this.get(opts, state, queryString)
