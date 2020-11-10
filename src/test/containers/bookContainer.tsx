@@ -20,12 +20,12 @@ export default () => {
                     result.items.map(i => <React.Fragment key={i.id}>
                         <td>{i.id}</td>
                         <td>{i.name}</td>
-                        <td>{i.library.name}</td>
+                        <td>{i.library?.name}</td>
                     </React.Fragment>) :
                     result.items.map(i => <React.Fragment key={i.id}>
                         <td>{i.id}</td>
                         <td>{i.name}</td>
-                        <td>{i.library.name ? i.library.name : 'Loading ...'}</td>
+                        <td>{i.library?.name ?? 'Loading ...'}</td>
                     </React.Fragment>)
             }
         </tbody>

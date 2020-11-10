@@ -61,8 +61,8 @@ test('useGetPopulated works', (d) => {
     function LibraryComponentGetPopulated() {
         const result = Book.useGetPopulated()
         return <React.Fragment>
-            {result.populated && result.items.map(i => <p key={i.id}>{i.library.name}</p>)}
-            {!result.populated && result.items.map(i => <p key={i.id}>{i.library.name}</p>)}
+            {result.populated && result.items.map(i => <p key={i.id}>{i.library?.name}</p>)}
+            {!result.populated && result.items.map(i => <p key={i.id}>{i.library?.name}</p>)}
         </React.Fragment>
     }
     global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
@@ -88,10 +88,41 @@ test('useGetPopulated works', (d) => {
         d()
     }, 60)
 });
+test('useGetPopulated works with idOnly and nullable', (d) => {
+    function LibraryComponentGetPopulated() {
+        const result = Book.useGetPopulated()
+        return <React.Fragment>
+            {result.populated && result.items.map(i => <p key={i.id}>{i.library?.name ?? 'nullable'}</p>)}
+            {!result.populated && result.items.map(i => <p key={i.id}>{i.library?.name ?? 'nullable'}</p>)}
+        </React.Fragment>
+    }
+    global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
+        send() {
+            switch (this.responseURL) {
+                case '/api/example':
+                    return setTimeout(() => {
+                        this.respond(200, {}, JSON.stringify([{ id: 1, name: 'book', library: null }] as BookType[]))
+                    }, 10)
+                case '/api/library/1/':
+                    return setTimeout(() => {
+                        this.respond(200, {}, JSON.stringify({ id: 1, name: 'book' } as BookType))
+                    }, 10)
+            }
+        }
+    }
+    const Provider = getProvider()
+    const { getByText, container } = render(<Provider>
+        <LibraryComponentGetPopulated />
+    </Provider>);
+    setTimeout(() => {
+        getByText(/nullable/i);
+        d()
+    }, 60)
+});
 test('useGetPopulatedById works', (d) => {
     function LibraryComponentGetByIdPopulated() {
         const result = Book.useGetByIdPopulated(1)
-        return <p>{result.item?.library.name}</p>
+        return <p>{result.item?.library?.name}</p>
     }
     global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
         send() {
@@ -113,6 +144,35 @@ test('useGetPopulatedById works', (d) => {
     </Provider>);
     setTimeout(() => {
         getByText(/book/i);
+        d()
+    }, 60)
+});
+
+test('useGetPopulatedById with idOnly nullable and null works', (d) => {
+    function LibraryComponentGetByIdPopulated() {
+        const result = Book.useGetByIdPopulated(1)
+        return <p>{result.item?.library?.name ?? 'nullable'}</p>
+    }
+    global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
+        send() {
+            switch (this.responseURL) {
+                case '/api/example/1':
+                    return setTimeout(() => {
+                        this.respond(200, {}, JSON.stringify({ id: 1, name: 'book', library: null } as BookType))
+                    }, 40)
+                case '/api/library/1/':
+                    return setTimeout(() => {
+                        this.respond(200, {}, JSON.stringify({ id: 1, name: 'book' } as BookType))
+                    }, 10)
+            }
+        }
+    }
+    const Provider = getProvider()
+    const { getByText } = render(<Provider>
+        <LibraryComponentGetByIdPopulated />
+    </Provider>);
+    setTimeout(() => {
+        getByText(/nullable/i);
         d()
     }, 60)
 });

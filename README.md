@@ -249,7 +249,7 @@ You can populate items with a simple usage (you need to check if it's populated,
 			result.items.map(i => <React.Fragment key={i.id}>
 			    <td>{i.id}</td>
 			    <td>{i.name}</td>
-			    <td>{i.library.name ? i.library.name : 'Loading ...'}</td>
+			    <td>{i.library.name ?? 'Loading ...'}</td>
 			</React.Fragment>)
 		    }
 		</tbody>

@@ -246,16 +246,19 @@ export class Schema<RealType extends { [key: string]: any } = any, PopulatedType
                 const field = Array.isArray(gField) ? gField[0] : gField
                 const type = fieldIsExtendedFormat(field) ? field.type : field
                 const idOnly = this.fieldIsExtendedFormatWithModel(field) ? field.idOnly === true : false
+                const nullable = fieldIsExtendedFormat(field) ? field.nullable === true : false
                 if (this._fieldIsAnIdModel(type)) {
                     if (idOnly) {
                         if (isArray) {
                             const array = (<any>item)[key]
                             for (let i = 0; i < array.length; i++) {
-                                const getByIdResult = type._reducer.getById(state, array[i])
-                                if (!getByIdResult) return false
+                                if (!nullable || (nullable && array[i] !== null)) {
+                                    const getByIdResult = type._reducer.getById(state, array[i])
+                                    if (!getByIdResult) return false
+                                }
                             }
                         } else {
-                            if (!type._reducer.getById(state, item[key])) return false
+                            if ((!nullable || (nullable && item[key] !== null)) && !type._reducer.getById(state, item[key])) return false
                         }
                     }
                 } else if (this.fieldIsSchema(type)) {
@@ -285,16 +288,23 @@ export class Schema<RealType extends { [key: string]: any } = any, PopulatedType
                 const field = Array.isArray(gField) ? gField[0] : gField
                 const type = fieldIsExtendedFormat(field) ? field.type : field
                 const idOnly = this.fieldIsExtendedFormatWithModel(field) ? field.idOnly === true : false
+                const nullable = fieldIsExtendedFormat(field) ? field.nullable === true : false
                 if (this._fieldIsAnIdModel(type)) {
                     if (idOnly) {
                         if (isArray) {
                             result[key] = (<any>item)[key].map((object: any) => {
-                                const getByIdResult = type._reducer.getById(state, object)
-                                return getByIdResult ? type.model.schema._convertToPopulated(state, getByIdResult) : { [type._id]: object }
+                                if (!nullable || (nullable && object !== null)) {
+                                    const getByIdResult = type._reducer.getById(state, object)
+                                    return getByIdResult ? type.model.schema._convertToPopulated(state, getByIdResult) : { [type._id]: object }
+                                } else {
+                                    return object
+                                }
                             })
                         } else {
-                            const getByIdResult = type._reducer.getById(state, item[key])
-                            result[key] = getByIdResult ? type.model.schema._convertToPopulated(state, getByIdResult) : { [type._id]: (<any>item)[key] }
+                            if (!nullable || (nullable && item[key] !== null)) {
+                                const getByIdResult = type._reducer.getById(state, item[key])
+                                result[key] = getByIdResult ? type.model.schema._convertToPopulated(state, getByIdResult) : { [type._id]: (<any>item)[key] }
+                            }
                         }
                     }
                 } else if (this.fieldIsSchema(type)) {
@@ -320,13 +330,16 @@ export class Schema<RealType extends { [key: string]: any } = any, PopulatedType
                 const field = Array.isArray(gField) ? gField[0] : gField
                 const type = fieldIsExtendedFormat(field) ? field.type : field
                 const idOnly = this.fieldIsExtendedFormatWithModel(field) ? field.idOnly === true : false
+                const nullable = fieldIsExtendedFormat(field) ? field.nullable === true : false
                 if (this._fieldIsAnIdModel(type)) {
                     if (idOnly) {
                         if (isArray) {
                             (<any>item)[key].forEach((object: any, idx: number) => {
-                                callback(type, object)
+                                if (!nullable || (nullable && object !== null)) {
+                                    callback(type, object)
+                                }
                             })
-                        } else {
+                        } else if (!nullable || (nullable && item[key] !== null)) {
                             callback(type, (<any>item)[key])
                         }
                     }
