@@ -239,7 +239,7 @@ export class Schema<RealType extends { [key: string]: any } = any, PopulatedType
     public _isPopulated(state: ReducerType, item: RealType): boolean {
         let key: string
         for (key in this._schema) {
-            if (item.hasOwnProperty(key)) {
+            if (item !== null && item.hasOwnProperty(key)) {
                 // check arrays and required property.
                 const gField = this._schema[key]
                 const isArray = fieldIsExtendedFormat(gField) ? Array.isArray(gField.type) : Array.isArray(gField)
@@ -281,7 +281,7 @@ export class Schema<RealType extends { [key: string]: any } = any, PopulatedType
         let key: string
         let result: any = Object.assign({}, item)
         for (key in this._schema) {
-            if (item.hasOwnProperty(key)) {
+            if (item !== null && item.hasOwnProperty(key)) {
                 // check arrays and required property.
                 const gField = this._schema[key]
                 const isArray = fieldIsExtendedFormat(gField) ? Array.isArray(gField.type) : Array.isArray(gField)
@@ -323,7 +323,7 @@ export class Schema<RealType extends { [key: string]: any } = any, PopulatedType
     public _getModelValuesToPopulate(item: RealType, callback: (model: BasicIdRestModel, id: any) => void) {
         let key: string
         for (key in this._schema) {
-            if (item.hasOwnProperty(key)) {
+            if (item !== null && item.hasOwnProperty(key)) {
                 // check arrays and required property.
                 const gField = this._schema[key]
                 const isArray = fieldIsExtendedFormat(gField) ? Array.isArray(gField.type) : Array.isArray(gField)

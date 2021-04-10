@@ -37,8 +37,8 @@ describe('getSearchSubmodel', () => {
         function LibraryComponentGetPopulated() {
             const result = bookModelOtherUrl.useGetPopulated()
             return <React.Fragment>
-                {result.populated && result.items.map(i => <p key={i.id}>{i.library.name}</p>)}
-                {!result.populated && result.items.map(i => <p key={i.id}>{i.library.name}</p>)}
+                {result.populated && result.items.map(i => <p key={i.id}>{i.library?.name}</p>)}
+                {!result.populated && result.items.map(i => <p key={i.id}>{i.library?.name}</p>)}
             </React.Fragment>
         }
         global.XMLHttpRequest = class XMLHttpRequest extends FakeXMLHttpRequest {
